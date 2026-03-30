@@ -361,38 +361,91 @@ function hideMissingList() {
 }
 
 /* CAMERA SCANNER */
+let currentCameraId = null;
+let availableCameras = [];
+
 async function startScanner() {
-  // Don't start if in scanner mode
   if (scanMode === "scanner") return;
   
   try {
-    qr = new Html5Qrcode("reader");
-    const devices = await Html5Qrcode.getCameras();
+    // Get cameras first
+    availableCameras = await Html5Qrcode.getCameras();
     
-    if (!devices || devices.length === 0) {
+    if (!availableCameras || availableCameras.length === 0) {
       statusEl.textContent = "Kamera tidak ditemukan";
       statusEl.className = "error";
       return;
     }
     
-    let cameraId = devices[devices.length - 1].id;  // Last = usually main rear camera
-for (const cam of devices) {
-  const name = (cam.label || "").toLowerCase();
-  // Prefer back/rear cameras, but skip wide/ultra if possible
-  if (name.includes("back") || name.includes("rear") || name.includes("environment")) {
-    if (!name.includes("wide") && !name.includes("ultra")) {
-      cameraId = cam.id;
-      break;
+    // Populate dropdown
+    populateCameraSelect();
+    
+    // Auto-select: prefer back camera, avoid wide/ultra
+    let selectedCam = availableCameras[availableCameras.length - 1]; // default last
+    
+    for (const cam of availableCameras) {
+      const name = (cam.label || "").toLowerCase();
+      // Look for back/rear but NOT wide/ultra
+      if ((name.includes("back") || name.includes("rear") || name.includes("environment")) 
+          && !name.includes("wide") && !name.includes("ultra")) {
+        selectedCam = cam;
+        break;
+      }
     }
-  }
-}
-    await qr.start(cameraId, { fps: 12, qrbox: { width: 250, height: 250 } }, onScanSuccess);
-    //statusEl.textContent = "Arahkan QR ke kamera";
-    statusEl.className = "scanning";
-    reader.classList.add("scanning");
+    
+    currentCameraId = selectedCam.id;
+    await startCamera(currentCameraId);
     
   } catch (err) {
     statusEl.textContent = "Error kamera: " + err.message;
+    statusEl.className = "error";
+  }
+}
+
+function populateCameraSelect() {
+  const select = document.getElementById("cameraSelect");
+  select.innerHTML = '<option value="">Pilih Kamera...</option>';
+  
+  availableCameras.forEach((cam, index) => {
+    const option = document.createElement("option");
+    option.value = cam.id;
+    // Clean up label for display
+    let label = cam.label || `Kamera ${index + 1}`;
+    // Shorten long labels
+    label = label.replace(/\(.*?\)/g, '').trim();
+    option.textContent = label;
+    select.appendChild(option);
+  });
+  
+  // Show dropdown if more than 1 camera
+  select.style.display = availableCameras.length > 1 ? "block" : "none";
+  select.value = currentCameraId || "";
+}
+
+async function switchCamera(cameraId) {
+  if (!cameraId || cameraId === currentCameraId) return;
+  
+  // Stop current
+  if (qr) {
+    await qr.stop();
+  }
+  
+  currentCameraId = cameraId;
+  await startCamera(cameraId);
+}
+
+async function startCamera(cameraId) {
+  try {
+    qr = new Html5Qrcode("reader");
+    await qr.start(
+      cameraId, 
+      { fps: 12, qrbox: { width: 250, height: 250 } }, 
+      onScanSuccess
+    );
+    statusEl.className = "scanning";
+    reader.classList.add("scanning");
+  } catch (err) {
+    statusEl.textContent = "Gagal start kamera: " + err.message;
     statusEl.className = "error";
   }
 }
