@@ -375,15 +375,17 @@ async function startScanner() {
       return;
     }
     
-    let cameraId = devices[0].id;
-    for (const cam of devices) {
-      const name = (cam.label || "").toLowerCase();
-      if (name.includes("back") || name.includes("rear") || name.includes("environment")) {
-        cameraId = cam.id;
-        break;
-      }
+    let cameraId = devices[devices.length - 1].id;  // Last = usually main rear camera
+for (const cam of devices) {
+  const name = (cam.label || "").toLowerCase();
+  // Prefer back/rear cameras, but skip wide/ultra if possible
+  if (name.includes("back") || name.includes("rear") || name.includes("environment")) {
+    if (!name.includes("wide") && !name.includes("ultra")) {
+      cameraId = cam.id;
+      break;
     }
-    
+  }
+}
     await qr.start(cameraId, { fps: 12, qrbox: { width: 250, height: 250 } }, onScanSuccess);
     //statusEl.textContent = "Arahkan QR ke kamera";
     statusEl.className = "scanning";
