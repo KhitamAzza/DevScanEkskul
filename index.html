@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>QR Absensi</title>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================================
+     LOGIN SCREEN
+     ============================================ -->
+<div id="loginScreen">
+  <h1>🔐 QR ABSENSI</h1>
+  <p>Masukkan password untuk memulai</p>
+  <input 
+    type="password" 
+    id="passwordInput" 
+    placeholder="Password" 
+    autocomplete="off"
+    oninput="checkAutoLogin()"
+  >
+  <button id="loginBtn" onclick="doLogin()">MASUK</button>
+  <div id="loginError">Password salah!</div>
+</div>
+
+<!-- ============================================
+     MAIN APP
+     ============================================ -->
+<div id="mainApp" style="display: none;">
+  
+  <!-- Header -->
+  <div id="header">
+    <div id="operatorInfo">
+      <div id="operatorName">-</div>
+      <div id="operatorEkstra">-</div>
+    </div>
+    <div id="headerControls">
+      <button id="modeToggle" onclick="toggleMode()">📷 Camera</button>
+      <button id="logoutBtn" onclick="doLogout()">🚪 Keluar</button>
+    </div>
+  </div>
+  
+  <!-- Scanner Section -->
+  <div class="scanner-section" id="scannerSection">
+    
+    <!-- Status Line -->
+    <div id="status"></div>
+    
+    <!-- Camera Container -->
+    <div id="cameraContainer">
+      <div id="reader"></div>
+    </div>
+    <div class="time-display">
+  <div class="time-big" id="timeBig">00:00</div>
+  </div>
+    <!-- Scanner Mode Hint (shown when camera hidden) -->
+    <div class="scanner-hint">
+      <div style="font-size: 32px; margin-bottom: 8px;">⌨️</div>
+      <div>Mode Scanner Aktif</div>
+      <div style="font-size: 12px; margin-top: 4px; opacity: 0.7;">Scan barcode atau ketik ID siswa</div>
+    </div>
+    
+    <!-- Student Card -->
+    <div id="studentCard">
+      
+      <!-- Empty State (shown when no scan) -->
+      <div class="empty-state" id="emptyState">
+        <div class="photo-placeholder">👤</div>
+        <div class="hint-text">Scan kode untuk cek siswa</div>
+      </div>
+      
+      <!-- Student Info (shown after scan) -->
+      <div class="student-card-inner" id="studentInfo" style="display: none;">
+        <div class="student-photo-container">
+          <img id="studentPhoto" src="" alt="Foto Siswa">
+          <div class="photo-placeholder" id="photoPlaceholder" style="display: none;">👤</div>
+        </div>
+        
+        <div class="student-info">
+          <div id="studentName">-</div>
+          <div id="studentClass">-</div>
+          <div id="studentID">-</div>
+          <div id="scanTime">-</div>
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="card-actions" id="cardActions" style="display: none;">
+        <button id="pelanggaranBtn" onclick="markPelanggaran()">⚠️ Tandai ILLEGAL</button>
+        <div id="pelanggaranStatus">✓ Sudah ditandai ILLEGAL</div>
+        <button onclick="closeStudentCard()" class="close-btn">✕ Tutup</button>
+      </div>
+      
+    </div>
+    
+    <!-- Bottom Info Tiles -->
+    <div class="bottom-tiles">
+      <div class="info-tile missing-tile" id="missingTile">
+  <div class="tile-value missing" id="missingTileValue">0</div>
+  <div class="tile-label">Belum Absen</div>
+</div>
+      <div class="info-tile">
+        <div class="tile-value tile-mode-pagi" id="modeTileValue">-</div>
+        <div class="tile-label">Mode</div>
+      </div>
+      <div class="info-tile">
+        <div class="tile-value" id="timeTileValue">--:--</div>
+        <div class="tile-label">Waktu</div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- Floating Action Button for Missing List -->
+  <div id="missingFab" onclick="showMissingList()">
+    
+    </div>
+  
+</div>
+
+<!-- ============================================
+     MISSING LIST SCREEN
+     ============================================ -->
+<div id="missingScreen">
+  <div id="missingHeader">
+    <button id="backBtn" onclick="hideMissingList()">⬅️</button>
+    <h2>Siswa Belum Absen</h2>
+  </div>
+  
+  <div id="missingList">
+    <!-- Populated by JS -->
+  </div>
+</div>
+
+<!-- ============================================
+     LOADING & STATUS
+     ============================================ -->
+<div id="loadingOverlay">
+  <div class="loader"></div>
+  <p>Memuat...</p>
+</div>
+
+<div id="connectionStatus" class="online">🟢 Online</div>
+
+<!-- Audio -->
+<audio id="beepSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+<audio id="errorSound" src="Salah_Ekskul.mp3" preload="auto"></audio>
+<audio id="illegalSound" src="Illegal.mp3" preload="auto"></audio>
+
+<script src="script.js"></script>
+</body>
+</html>
