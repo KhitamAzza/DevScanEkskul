@@ -39,6 +39,9 @@
     </div>
     <div id="headerControls">
       <button id="modeToggle" onclick="toggleMode()">📷 Camera</button>
+      <select id="cameraSelect" onchange="switchCamera(this.value)" style="display: none;">
+  <option value="">Pilih Kamera...</option>
+</select>
       <button id="logoutBtn" onclick="doLogout()">🚪 Keluar</button>
     </div>
   </div>
