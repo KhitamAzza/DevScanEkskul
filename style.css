@@ -248,7 +248,7 @@ body {
 @media screen and (min-width: 768px) {
   #status {
     position: fixed;
-    top: 80px; /* below header */
+    top: 80px;
     left: 50%;
     transform: translateX(-50%);
     
@@ -538,9 +538,10 @@ body {
   transform: scale(0.98);
 }
 
-.info-tile:nth-child(2),
-.info-tile:nth-child(3) {
-  display: none; /* Hide mode and time on mobile */
+/* Default: hide mode and time tiles on mobile */
+.info-tile.mode-tile,
+.info-tile.time-tile {
+  display: none;
 }
 
 .tile-value {
@@ -555,6 +556,42 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-top: 4px;
+}
+
+/* ============================================
+   KODE KHUSUS STYLES
+   ============================================ */
+
+.kode-khusus-tile {
+  background: linear-gradient(135deg, var(--bg-raised) 0%, #1a1a2e 100%);
+}
+
+.kode-khusus-tile:active {
+  transform: scale(0.95);
+}
+
+/* Numeric Keypad Buttons */
+.num-btn {
+  padding: 16px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.num-btn:active {
+  background: var(--lime);
+  color: var(--bg-deep);
+  transform: scale(0.95);
+}
+
+/* Missing tile clickable */
+.missing-tile {
+  cursor: pointer;
 }
 
 /* ============================================
@@ -754,6 +791,33 @@ body {
 }
 
 /* ============================================
+   MOBILE LAYOUT (≤ 767px) - BOTTOM TILES 2-COLUMN
+   ============================================ */
+
+@media screen and (max-width: 767px) {
+  .bottom-tiles {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px;
+  }
+  
+  /* Show only first 2 tiles (Belum Absen + Kode Khusus) */
+  .bottom-tiles .info-tile:nth-child(1),
+  .bottom-tiles .info-tile:nth-child(2) {
+    display: flex !important;
+  }
+  
+  /* Hide Mode and Time tiles */
+  .bottom-tiles .info-tile:nth-child(3),
+  .bottom-tiles .info-tile:nth-child(4) {
+    display: none !important;
+  }
+  
+  #missingFab {
+    display: none !important;
+  }
+}
+
+/* ============================================
    DESKTOP LAYOUT (≥ 768px)
    ============================================ */
 
@@ -914,25 +978,24 @@ body {
     font-size: 64px;
   }
   
-  /* Bottom tiles - 2 tiles, clickable */
+  /* Bottom tiles - 4 tiles on desktop */
   .bottom-tiles {
     grid-column: 1 / -1;
     grid-row: 2;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(4, 1fr) !important;
     gap: 16px;
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
     width: 100%;
   }
   
-  .info-tile:nth-child(2),
-  .info-tile:nth-child(3) {
-    display: flex;
-  }
-  
-  .info-tile:nth-child(3) {
-    display: none; /* Hide time tile */
+  /* Show all tiles on desktop */
+  .bottom-tiles .info-tile:nth-child(1),
+  .bottom-tiles .info-tile:nth-child(2),
+  .bottom-tiles .info-tile:nth-child(3),
+  .bottom-tiles .info-tile:nth-child(4) {
+    display: flex !important;
   }
   
   .info-tile {
@@ -966,7 +1029,17 @@ body {
   .time-display {
     display: none !important;
   }
+  
+  /* Desktop: Hide numeric keypad, show input */
+  #numericKeypad {
+    display: none !important;
+  }
+  
+  #desktopKodeInput {
+    display: block !important;
+  }
 }
+
 /* ============================================
    MOBILE CLOCK - CENTER & EMPHASIS
    ============================================ */
@@ -974,7 +1047,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  
   margin: 8px 0 4px;
 }
 
@@ -982,16 +1054,16 @@ body {
   font-size: 32px;
   font-weight: 700;
   letter-spacing: 1px;
-  
   padding: 8px 16px;
   border-radius: 20px;
-  
   background: var(--bg-raised);
   border: 1px solid var(--border-subtle);
-  
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
-/* DEFAULT (Desktop) */
+
+/* ============================================
+   PELANGGARAN BUTTON STYLES
+   ============================================ */
 .btn-pelanggaran {
   background: #ff4d4f;
   color: white;
@@ -1003,45 +1075,93 @@ body {
   cursor: pointer;
 }
 
-/* ============================================
-   MOBILE MODE (<= 768px)
-   ============================================ */
 @media (max-width: 768px) {
-
   .btn-pelanggaran {
     width: 36px;
     height: 36px;
     padding: 0;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     font-size: 18px;
     font-weight: 700;
-
-    border-radius: 50%; /* circle */
+    border-radius: 50%;
+    font-size: 0;
   }
 
   .btn-pelanggaran::after {
     content: "!";
   }
-
-  .btn-pelanggaran {
-    font-size: 0; /* hide original text */
-  }
-}
-#cameraSelect {
-  padding: 8px 12px;
-  background: var(--bg-raised);
-  color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  font-size: 13px;
-  max-width: 150px;
 }
 
-#cameraSelect option {
+/* ============================================
+   KODE KHUSUS MODAL STYLES
+   ============================================ */
+
+#kodeKhususModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 15, 0.95);
+  z-index: 2000;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+#kodeKhususModal > div {
   background: var(--bg-surface);
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 320px;
+  border: 1px solid var(--border-subtle);
+}
+
+#kodeDisplay {
+  background: var(--bg-raised);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 8px;
+  margin-bottom: 20px;
+  font-family: monospace;
+  min-height: 56px;
+}
+
+#numericKeypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+#desktopKodeInput {
+  display: none;
+  width: 100%;
+  padding: 16px;
+  font-size: 24px;
+  text-align: center;
+  background: var(--bg-raised);
+  border: 2px solid var(--border-subtle);
+  border-radius: 12px;
   color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+#kodeStatus {
+  text-align: center;
+  font-size: 14px;
+  min-height: 20px;
+  margin-bottom: 16px;
+}
+
+#kodeKhususModal button {
+  cursor: pointer;
 }
