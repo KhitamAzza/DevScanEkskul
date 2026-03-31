@@ -15,6 +15,7 @@ let sendTimer = null;
 let qr = null;
 let currentScanId = null;
 let isSending = false;
+let isSubmittingKode = false;
 
 // BARCODE SCANNER VARIABLES
 let barcodeBuffer = "";
@@ -25,7 +26,10 @@ const MIN_BARCODE_LENGTH = 5;
 // LAYOUT MODE
 let scanMode = localStorage.getItem("scanMode") || "camera";
 
-// DOM ELEMENTS - Existing
+// KODE KHUSUS VARIABLES
+let currentKodeInput = "";
+
+// DOM ELEMENTS
 const loginScreen = document.getElementById("loginScreen");
 const mainApp = document.getElementById("mainApp");
 const missingScreen = document.getElementById("missingScreen");
@@ -35,8 +39,6 @@ const operatorNameEl = document.getElementById("operatorName");
 const operatorEkstraEl = document.getElementById("operatorEkstra");
 const statusEl = document.getElementById("status");
 const missingListEl = document.getElementById("missingList");
-
-// NEW DOM ELEMENTS for Bento Layout
 const emptyState = document.getElementById("emptyState");
 const studentInfo = document.getElementById("studentInfo");
 const cardActions = document.getElementById("cardActions");
@@ -50,7 +52,6 @@ const pelanggaranBtn = document.getElementById("pelanggaranBtn");
 const pelanggaranStatus = document.getElementById("pelanggaranStatus");
 const studentCard = document.getElementById("studentCard");
 const missingFab = document.getElementById("missingFab");
-const fabCount = document.getElementById("fabCount");
 const missingTileValue = document.getElementById("missingTileValue");
 const modeTileValue = document.getElementById("modeTileValue");
 const timeTileValue = document.getElementById("timeTileValue");
@@ -66,14 +67,12 @@ function playSound(soundId) {
 
 /* BARCODE SCANNER DETECTION */
 document.addEventListener("keydown", function(e) {
-  // Space key for ILLEGAL (when student card is shown)
   if (e.code === "Space" && currentScanId && studentCard.classList.contains("visible")) {
     e.preventDefault();
     markPelanggaran();
     return;
   }
   
-  // Barcode detection
   if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
   if (!currentOperator || mainApp.style.display === "none") return;
   
@@ -109,10 +108,9 @@ function handleBarcodeScan(scannedId) {
   processStudentScan(cleanId);
 }
 
-/* MODE TOGGLE FUNCTIONS */
+/* MODE TOGGLE */
 function toggleMode() {
   if (scanMode === "camera") {
-    // Switch to scanner
     scanMode = "scanner";
     localStorage.setItem("scanMode", "scanner");
     if (qr) qr.stop().catch(() => {});
@@ -120,7 +118,6 @@ function toggleMode() {
     statusEl.textContent = "⌨️ Mode Scanner Aktif";
     statusEl.className = "scanning";
   } else {
-    // Switch to camera
     scanMode = "camera";
     localStorage.setItem("scanMode", "camera");
     applyLayout();
@@ -128,6 +125,7 @@ function toggleMode() {
   }
   updateModeButton();
 }
+
 function updateModeButton() {
   const btn = document.getElementById("modeToggle");
   if (btn) {
@@ -139,7 +137,6 @@ function applyLayout() {
   const body = document.body;
   const isMobile = window.innerWidth < 768;
   
-  // Remove all mode classes
   body.classList.remove("pc-camera-mode", "pc-scanner-mode", "mobile-scanner-mode");
   
   if (isMobile) {
@@ -217,16 +214,11 @@ function doLogin() {
     mainApp.style.display = "block";
     loginError.style.display = "none";
     
-    // Apply layout before loading
     applyLayout();
     updateModeButton();
-    
-    // Start clock
     startClock();
-    
     loadStudentsAndUpdateCount();
     
-    // Only start camera if in camera mode
     if (scanMode === "camera") {
       startScanner();
     }
@@ -262,7 +254,6 @@ async function loadStudentsAndUpdateCount() {
     if (data.status === "ok") {
       allStudents = data.data;
       
-      // Update mode tile
       if (data.isPagiPeriod) {
         operatorEkstraEl.textContent = "MODE PAGI (GLOBAL)";
         operatorEkstraEl.classList.add("pagi-mode");
@@ -291,12 +282,8 @@ async function loadStudentsAndUpdateCount() {
 /* MISSING FUNCTIONS */
 function updateMissingDisplay() {
   const missing = getMissingStudents();
-  
-  // Update tile value
   const tileValue = document.getElementById('missingTileValue');
   if (tileValue) tileValue.textContent = missing.length;
-  
-  // Store for list view
   window.missingStudents = missing;
 }
 
@@ -306,19 +293,9 @@ function getMissingStudents() {
   
   return allStudents.filter(s => {
     const status = s.status || "";
-    
-    if (["ILLEGAL", "HADIR", "EKSTRA"].includes(status)) {
-      return false;
-    }
-    
-    if (isEkstraPeriod && status === "PAGI") {
-      return true;
-    }
-    
-    if (!status) {
-      return true;
-    }
-    
+    if (["ILLEGAL", "HADIR", "EKSTRA"].includes(status)) return false;
+    if (isEkstraPeriod && status === "PAGI") return true;
+    if (!status) return true;
     return false;
   });
 }
@@ -341,7 +318,6 @@ function showMissingList() {
       if (isEkstraPeriod && s.status === "PAGI") {
         statusNote = '<div class="missing-status-note">(PAGI saja)</div>';
       }
-      
       return `
         <div class="missing-item">
           <div>
@@ -364,7 +340,6 @@ function hideMissingList() {
 }
 
 /* CAMERA SCANNER */
-
 async function startScanner() {
   if (scanMode === "scanner") return;
   
@@ -377,7 +352,6 @@ async function startScanner() {
       return;
     }
     
-    // Auto-pick: prefer back/rear camera, fallback to last device
     let cameraId = devices[devices.length - 1].id;
     for (const cam of devices) {
       const name = (cam.label || "").toLowerCase();
@@ -388,64 +362,12 @@ async function startScanner() {
     }
     
     qr = new Html5Qrcode("reader");
-    await qr.start(
-      cameraId, 
-      { fps: 12, qrbox: { width: 250, height: 250 } }, 
-      onScanSuccess
-    );
+    await qr.start(cameraId, { fps: 12, qrbox: { width: 250, height: 250 } }, onScanSuccess);
     statusEl.className = "scanning";
     reader.classList.add("scanning");
     
   } catch (err) {
     statusEl.textContent = "Error kamera: " + err.message;
-    statusEl.className = "error";
-  }
-}
-
-function populateCameraSelect() {
-  const select = document.getElementById("cameraSelect");
-  select.innerHTML = '<option value="">Pilih Kamera...</option>';
-  
-  availableCameras.forEach((cam, index) => {
-    const option = document.createElement("option");
-    option.value = cam.id;
-    // Clean up label for display
-    let label = cam.label || `Kamera ${index + 1}`;
-    // Shorten long labels
-    label = label.replace(/\(.*?\)/g, '').trim();
-    option.textContent = label;
-    select.appendChild(option);
-  });
-  
-  // Show dropdown if more than 1 camera
-  select.style.display = availableCameras.length > 1 ? "block" : "none";
-  select.value = currentCameraId || "";
-}
-
-async function switchCamera(cameraId) {
-  if (!cameraId || cameraId === currentCameraId) return;
-  
-  // Stop current
-  if (qr) {
-    await qr.stop();
-  }
-  
-  currentCameraId = cameraId;
-  await startCamera(cameraId);
-}
-
-async function startCamera(cameraId) {
-  try {
-    qr = new Html5Qrcode("reader");
-    await qr.start(
-      cameraId, 
-      { fps: 12, qrbox: { width: 250, height: 250 } }, 
-      onScanSuccess
-    );
-    statusEl.className = "scanning";
-    reader.classList.add("scanning");
-  } catch (err) {
-    statusEl.textContent = "Gagal start kamera: " + err.message;
     statusEl.className = "error";
   }
 }
@@ -511,73 +433,63 @@ function processStudentScan(decodedText) {
     return;
   }
   
-  scans.push({
-    id: decodedText,
-    type: scanType,
-    time: now,
-    operator: currentOperator
-  });
+  scans.push({ id: decodedText, type: scanType, time: now, operator: currentOperator });
   localStorage.setItem("scanQueue", JSON.stringify(scans));
   
   playSound("beepSound");
   statusEl.textContent = "✔ " + student.nama + " (" + scanType + ")";
   statusEl.className = "ok";
   
-  // Visual feedback on camera
   reader.classList.remove("scanning");
   reader.classList.add("success");
   setTimeout(() => reader.classList.remove("success"), 300);
   
   showStudentCard(student, scanType);
-  
   clearTimeout(sendTimer);
   sendTimer = setTimeout(sendQueue, 15000);
 }
 
-/* SHOW STUDENT CARD - Updated for new structure */
+/* SHOW STUDENT CARD */
 function showStudentCard(student, scanType) {
   currentScanId = student.id;
   
-  // Hide empty state, show info
   emptyState.style.display = "none";
   studentInfo.style.display = "grid";
   cardActions.style.display = "flex";
   
-  // Update photo
   if (student.foto) {
     studentPhoto.src = student.foto;
     studentPhoto.style.display = "block";
     photoPlaceholder.style.display = "none";
+    studentPhoto.onerror = function() {
+      studentPhoto.style.display = "none";
+      photoPlaceholder.style.display = "flex";
+    };
   } else {
     studentPhoto.style.display = "none";
     photoPlaceholder.style.display = "flex";
   }
   
-  // Update text
   studentName.textContent = student.nama;
   studentClass.textContent = "Kelas " + student.kelas;
   studentID.textContent = student.id;
   
-  // Update time with type
   const timeStr = new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   scanTime.textContent = scanType + " " + timeStr;
   scanTime.className = scanType === "EKSTRA" ? "late" : "";
   
-  // Reset ILLEGAL button
   pelanggaranBtn.style.display = "block";
   pelanggaranBtn.classList.add("visible");
   pelanggaranBtn.disabled = false;
   pelanggaranStatus.style.display = "none";
   pelanggaranStatus.classList.remove("visible");
   
-  // Show card with animation
   studentCard.style.display = "block";
-  // Trigger reflow for animation
   void studentCard.offsetWidth;
   studentCard.classList.add("visible");
 }
 
-/* CLOSE STUDENT CARD MANUALLY */
+/* CLOSE STUDENT CARD */
 function closeStudentCard() {
   studentCard.classList.remove("visible");
   setTimeout(() => {
@@ -599,9 +511,7 @@ function sendQueue() {
     qr.stop().then(() => {
       statusEl.textContent = "⏳ Mengirim " + scans.length + " data...";
       doSend(scans);
-    }).catch(() => {
-      doSend(scans);
-    });
+    }).catch(() => doSend(scans));
   } else {
     doSend(scans);
   }
@@ -628,10 +538,7 @@ function doSend(scans) {
     })
     .finally(() => {
       isSending = false;
-      // Only restart camera if in camera mode
-      if (scanMode === "camera") {
-        startScanner();
-      }
+      if (scanMode === "camera") startScanner();
     });
 }
 
@@ -656,27 +563,11 @@ window.addEventListener("offline", () => {
   status.className = "offline";
 });
 
-// HANDLE RESIZE
 window.addEventListener("resize", () => {
-  if (currentOperator) {
-    applyLayout();
-  }
+  if (currentOperator) applyLayout();
 });
 
-/* ============================================
-   NEW FUNCTIONS for Layout
-   ============================================ */
-
-// Initialize missing tile click handler
-function initMissingTileClick() {
-  const missingTile = document.getElementById('missingTile');
-  if (missingTile) {
-    missingTile.addEventListener('click', showMissingList);
-    missingTile.style.cursor = 'pointer';
-  }
-}
-
-// Clock for bottom tile
+/* CLOCK */
 let clockInterval = null;
 
 function startClock() {
@@ -693,22 +584,189 @@ function stopClock() {
 
 function updateClock() {
   const now = new Date();
-  const timeStr = now.toLocaleTimeString("id-ID", { 
-    hour: '2-digit', 
-    minute: '2-digit' 
-  });
+  const timeStr = now.toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' });
   timeTileValue.textContent = timeStr;
-  
-  // Update big time if exists (desktop)
   const timeBig = document.getElementById("timeBig");
-  if (timeBig) {
-    timeBig.textContent = timeStr;
-  }
+  if (timeBig) timeBig.textContent = timeStr;
 }
 
-// Auto-focus password on load and init click handlers
+/* INIT */
 window.addEventListener("DOMContentLoaded", () => {
   updateModeButton();
   if (passwordInput) passwordInput.focus();
-  initMissingTileClick(); // Added: Initialize missing tile click
+  
+  // Desktop input handler for Kode Khusus
+  const desktopInput = document.getElementById("desktopKodeInput");
+  if (desktopInput) {
+    desktopInput.addEventListener("input", function(e) {
+      e.target.value = e.target.value.replace(/[^0-9]/g, "");
+      currentKodeInput = e.target.value;
+      updateKodeDisplay();
+      if (currentKodeInput.length === 5) {
+        submitKodeKhusus();
+      }
+    });
+  }
+  
+  // Escape key to close modal
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+      const modal = document.getElementById("kodeKhususModal");
+      if (modal && modal.style.display === "flex") {
+        closeKodeKhususModal();
+      }
+    }
+  });
 });
+
+/* ============================================
+   KODE KHUSUS FUNCTIONS
+   ============================================ */
+
+function showKodeKhususModal() {
+  currentKodeInput = "";
+  updateKodeDisplay();
+  const modal = document.getElementById("kodeKhususModal");
+  const status = document.getElementById("kodeStatus");
+  if (modal) modal.style.display = "flex";
+  if (status) {
+    status.textContent = "";
+    status.style.color = "";
+  }
+  
+  if (window.innerWidth >= 768) {
+    const input = document.getElementById("desktopKodeInput");
+    if (input) {
+      input.value = "";
+      input.focus();
+    }
+  }
+}
+
+function closeKodeKhususModal() {
+  const modal = document.getElementById("kodeKhususModal");
+  if (modal) modal.style.display = "none";
+  currentKodeInput = "";
+}
+
+function inputDigit(digit) {
+  if (currentKodeInput.length < 5) {
+    currentKodeInput += digit;
+    updateKodeDisplay();
+    
+    if (currentKodeInput.length === 5) {
+      setTimeout(() => submitKodeKhusus(), 300);
+    }
+  }
+}
+
+function backspaceKode() {
+  currentKodeInput = currentKodeInput.slice(0, -1);
+  updateKodeDisplay();
+}
+
+function clearKode() {
+  currentKodeInput = "";
+  updateKodeDisplay();
+}
+
+function updateKodeDisplay() {
+  const display = document.getElementById("kodeDisplay");
+  if (display) {
+    const padded = currentKodeInput.padEnd(5, "_").split("").join(" ");
+    display.textContent = padded;
+  }
+}
+
+async function submitKodeKhusus() {
+  const kode = window.innerWidth >= 768 
+    ? document.getElementById("desktopKodeInput")?.value 
+    : currentKodeInput;
+  
+  if (!kode || kode.length !== 5) return;
+  
+  if (isSubmittingKode) return;
+  isSubmittingKode = true;
+  
+  showLoading(true);
+  
+  try {
+    const hour = new Date().getHours();
+    const scanType = (hour >= 5 && hour < 8) ? "PAGI" : "EKSTRA";
+    
+    const res = await fetch(API_URL + "?action=useSpecialCode&code=" + kode + "&operator=" + encodeURIComponent(currentOperator) + "&type=" + scanType);
+    const data = await res.json();
+    
+    const kodeStatus = document.getElementById("kodeStatus");
+    
+    if (data.status === "ok") {
+      playSound("beepSound");
+      closeKodeKhususModal();
+      
+      const student = {
+        id: data.studentId,
+        nama: data.studentName,
+        kelas: data.studentClass,
+        foto: data.studentFoto || ""
+      };
+      
+      showStudentCard(student, scanType);
+      statusEl.textContent = "✔ " + data.studentName + " (" + scanType + ") - Kode Khusus";
+      statusEl.className = "ok";
+      
+      loadStudentsAndUpdateCount();
+      
+    } else if (data.status === "already_used") {
+      if (kodeStatus) {
+        kodeStatus.textContent = "❌ Kode sudah digunakan";
+        kodeStatus.style.color = "var(--red)";
+      }
+      playSound("errorSound");
+      currentKodeInput = "";
+      updateKodeDisplay();
+      const input = document.getElementById("desktopKodeInput");
+      if (input) input.value = "";
+      
+    } else if (data.status === "not_found") {
+      if (kodeStatus) {
+        kodeStatus.textContent = "❌ Kode tidak ditemukan";
+        kodeStatus.style.color = "var(--red)";
+      }
+      playSound("errorSound");
+      currentKodeInput = "";
+      updateKodeDisplay();
+      const input = document.getElementById("desktopKodeInput");
+      if (input) input.value = "";
+      
+    } else if (data.status === "illegal") {
+      if (kodeStatus) {
+        kodeStatus.textContent = "❌ Siswa sudah ILLEGAL";
+        kodeStatus.style.color = "var(--red)";
+      }
+      playSound("errorSound");
+      
+    } else if (data.status === "duplicate") {
+      if (kodeStatus) {
+        kodeStatus.textContent = "❌ Sudah absen " + scanType;
+        kodeStatus.style.color = "var(--red)";
+      }
+      playSound("errorSound");
+      
+    } else {
+      if (kodeStatus) {
+        kodeStatus.textContent = "❌ " + (data.message || "Error");
+        kodeStatus.style.color = "var(--red)";
+      }
+    }
+    
+  } catch (err) {
+    const kodeStatus = document.getElementById("kodeStatus");
+    if (kodeStatus) {
+      kodeStatus.textContent = "❌ Network error";
+      kodeStatus.style.color = "var(--red)";
+    }
+  }
+  
+  isSubmittingKode = false;
+  showLoading(false);
+}
