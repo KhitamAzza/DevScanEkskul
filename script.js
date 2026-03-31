@@ -112,19 +112,22 @@ function handleBarcodeScan(scannedId) {
 /* MODE TOGGLE FUNCTIONS */
 function toggleMode() {
   if (scanMode === "camera") {
+    // Switch to scanner
     scanMode = "scanner";
     localStorage.setItem("scanMode", "scanner");
-    if (qr) qr.stop();
+    if (qr) qr.stop().catch(() => {});
     applyLayout();
+    statusEl.textContent = "⌨️ Mode Scanner Aktif";
+    statusEl.className = "scanning";
   } else {
+    // Switch to camera
     scanMode = "camera";
     localStorage.setItem("scanMode", "camera");
-    startScanner();
     applyLayout();
+    startScanner();
   }
   updateModeButton();
 }
-
 function updateModeButton() {
   const btn = document.getElementById("modeToggle");
   if (btn) {
@@ -361,40 +364,37 @@ function hideMissingList() {
 }
 
 /* CAMERA SCANNER */
-let currentCameraId = null;
-let availableCameras = [];
 
 async function startScanner() {
   if (scanMode === "scanner") return;
   
   try {
-    // Get cameras first
-    availableCameras = await Html5Qrcode.getCameras();
+    const devices = await Html5Qrcode.getCameras();
     
-    if (!availableCameras || availableCameras.length === 0) {
-      statusEl.textContent = "Kamera tidak ditemukan";
+    if (!devices || devices.length === 0) {
+      statusEl.textContent = "Kamera tidak ditemukan, gunakan mode scanner";
       statusEl.className = "error";
       return;
     }
     
-    // Populate dropdown
-    populateCameraSelect();
-    
-    // Auto-select: prefer back camera, avoid wide/ultra
-    let selectedCam = availableCameras[availableCameras.length - 1]; // default last
-    
-    for (const cam of availableCameras) {
+    // Auto-pick: prefer back/rear camera, fallback to last device
+    let cameraId = devices[devices.length - 1].id;
+    for (const cam of devices) {
       const name = (cam.label || "").toLowerCase();
-      // Look for back/rear but NOT wide/ultra
-      if ((name.includes("back") || name.includes("rear") || name.includes("environment")) 
-          && !name.includes("wide") && !name.includes("ultra")) {
-        selectedCam = cam;
+      if (name.includes("back") || name.includes("rear") || name.includes("environment")) {
+        cameraId = cam.id;
         break;
       }
     }
     
-    currentCameraId = selectedCam.id;
-    await startCamera(currentCameraId);
+    qr = new Html5Qrcode("reader");
+    await qr.start(
+      cameraId, 
+      { fps: 12, qrbox: { width: 250, height: 250 } }, 
+      onScanSuccess
+    );
+    statusEl.className = "scanning";
+    reader.classList.add("scanning");
     
   } catch (err) {
     statusEl.textContent = "Error kamera: " + err.message;
