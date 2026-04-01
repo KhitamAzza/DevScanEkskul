@@ -694,7 +694,7 @@ async function submitKodeKhusus() {
     const hour = new Date().getHours();
     const scanType = (hour >= 5 && hour < 8) ? "PAGI" : "EKSTRA";
     
-    const res = await fetch(API_URL + "?action=useSpecialCode&code=" + kode + "&operator=" + encodeURIComponent(currentOperator) + "&type=" + scanType);
+    const res = await fetch(`${API_URL}?action=useSpecialCode&code=${code}&operator=${operator}&scanType=${scanType}`)
     const data = await res.json();
     
     const kodeStatus = document.getElementById("kodeStatus");
