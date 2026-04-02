@@ -16,9 +16,9 @@ const OPERATORS = {
   "ekswondo": { name: "jalupaka", ekstra: "Taekwondo" },
   "eksdance": { name: "Ocha", ekstra: "Dance" },
   "ekscinalam": { name: "Ergananta", ekstra: "Pecinta Alam" },
-  "Tatibarif": { name: "Syamsul arif", ekstra: "Basket" },
-  "azkiahasna": { name: "Chusnul Khitam Azza", ekstra: "Global" },
-  "koorwahyu": { name: "Wahyu prihanto", ekstra: "Global" }  
+  "Tatibarif": { name: "Syamsul arif", ekstra: "Zero" },
+  "azkiahasna": { name: "Chusnul Khitam Azza", ekstra: "Zero" },
+  "koorwahyu": { name: "Wahyu prihanto", ekstra: "Zero" }  
 };
 
 let currentOperator = null;
