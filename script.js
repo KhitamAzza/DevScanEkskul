@@ -1,11 +1,24 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbzwgwoKQNXSWn7BrwlzZe1XmVlY0JnGgA6CKY7cjVUXols6Oo_7IyBIiuVDmoQh__wO/exec";
 
 const OPERATORS = {
-  "ekstabog": { name: "Enggarsari", ekstra: "Tata Boga" },
-  "eksapmr": { name: "Pak Budi", ekstra: "PMR" },
-  "eksbasket": { name: "Bu Siti", ekstra: "Basket" },
-  "eksfutsal": { name: "Pak Agus", ekstra: "Futsal" },
-  "eksminton": { name: "Deni Affandi", ekstra: "Badminton" }
+"eksesport": { name: "Masduki Zen", ekstra: "E-Sport" },
+"eksfutsal": { name: "Rizky", ekstra: "Futsal" },
+"ekspakbola": { name: "Rico Yoga", ekstra: "Sepakbola" },
+"eksperdiri": { name: "Yudi Setiono", ekstra: "Perisai diri" },
+"eksmusik": { name: "M ismail", ekstra: "Musik" },
+"eksminton": { name: "Deni Affandi", ekstra: "Badminton" },
+"eksbasket": { name: "Syamsul Arif", ekstra: "Basket" },
+"eksbvoli": { name: "Achamd Wahyudi", ekstra: "Bola Voli" },
+"eksbanjari": { name: "Rahmad Hidayat", ekstra: "Al-Banjari" },
+  "ekstari": { name: "Nila", ekstra: "Seni tari" },
+  "ekstabog": { name: "M Iqbal", ekstra: "Tata Boga" },
+  "ekstapmr": { name: "Nur Khozinatul", ekstra: "PMR" },
+  "ekswondo": { name: "jalupaka", ekstra: "Taekwondo" },
+  "eksdance": { name: "Ocha", ekstra: "Dance" },
+  "ekscinalam": { name: "Ergananta", ekstra: "Pecinta Alam" },
+  "Tatibarif": { name: "Syamsul arif", ekstra: "Basket" },
+  "azkiahasna": { name: "Chusnul Khitam Azza", ekstra: "Global" },
+  "koorwahyu": { name: "Wahyu prihanto", ekstra: "Global" }  
 };
 
 let currentOperator = null;
