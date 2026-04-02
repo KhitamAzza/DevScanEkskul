@@ -4,7 +4,8 @@ const OPERATORS = {
   "ekstabog": { name: "Enggarsari", ekstra: "Tata Boga" },
   "eksapmr": { name: "Pak Budi", ekstra: "PMR" },
   "eksbasket": { name: "Bu Siti", ekstra: "Basket" },
-  "eksfutsal": { name: "Pak Agus", ekstra: "Futsal" }
+  "eksfutsal": { name: "Pak Agus", ekstra: "Futsal" },
+  "eksminton": { name: "Deni Affandi", ekstra: "Badminton" }
 };
 
 let currentOperator = null;
