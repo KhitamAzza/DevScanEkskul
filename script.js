@@ -695,7 +695,14 @@ async function submitKodeKhusus() {
     const hour = new Date().getHours();
     const scanType = (hour >= 5 && hour < 8) ? "PAGI" : "EKSTRA";
     
-    const res = await fetch(`${API_URL}?action=useSpecialCode&code=${code}&operator=${operator}&scanType=${scanType}`)
+    // ⭐ FIXED: Correct variable names (kode not code, currentOperator not operator, type not scanType)
+    const res = await fetch(
+      `${API_URL}?action=useSpecialCode` +
+      `&code=${kode}` +
+      `&operator=${encodeURIComponent(currentOperator)}` +
+      `&type=${scanType}`
+    );
+    
     const data = await res.json();
     
     const kodeStatus = document.getElementById("kodeStatus");
@@ -766,6 +773,7 @@ async function submitKodeKhusus() {
       kodeStatus.textContent = "❌ Network error";
       kodeStatus.style.color = "var(--red)";
     }
+    console.error("Kode Khusus Error:", err);
   }
   
   isSubmittingKode = false;
