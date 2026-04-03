@@ -10,13 +10,18 @@ const OPERATORS = {
 "eksbasket": { name: "Syamsul Arif", ekstra: "Basket" },
 "eksbvoli": { name: "Achamd Wahyudi", ekstra: "Bola Voli" },
 "eksbanjari": { name: "Rahmad Hidayat", ekstra: "Al-Banjari" },
-  "ekstari": { name: "Nila", ekstra: "Seni tari" },
-  "ekstabog": { name: "M Iqbal", ekstra: "Tata Boga" },
-  "ekstapmr": { name: "Nur Khozinatul", ekstra: "PMR" },
-  "ekswondo": { name: "jalupaka", ekstra: "Taekwondo" },
-  "eksdance": { name: "Ocha", ekstra: "Dance" },
-  "ekscinalam": { name: "Ergananta", ekstra: "Pecinta Alam" },
-  "azkiahasna": { name: "Chusnul Khitam Azza", ekstra: "Zero" }
+ "ekstari": { name: "Nila", ekstra: "Seni tari" },
+ "ekstabog": { name: "M Iqbal", ekstra: "Tata Boga" },
+ "ekstapmr": { name: "Nur Khozinatul", ekstra: "PMR" },
+ "ekswondo": { name: "jalupaka", ekstra: "Taekwondo" },
+ "eksdance": { name: "Ocha", ekstra: "Dance" },
+ "ekscinalam": { name: "Ergananta", ekstra: "Pecinta Alam" }
+};
+const MASTER_KEYS = {
+  "azkiahasna": { name: "Chusnul khitam azza", role: "master" },
+  "devtatib1": { name: "Syamsul Arif", role: "master" },
+  "devtatib2": { name: "Masduki zen", role: "master" },
+  "devkoord2": { name: "Prihanto Wahyu", role: "master" }
 };
 
 let currentOperator = null;
@@ -206,7 +211,9 @@ function markPelanggaran() {
 /* AUTO LOGIN */
 function checkAutoLogin() {
   const password = passwordInput.value.trim().toLowerCase();
-  if (OPERATORS[password]) {
+  
+  // Check both regular operators AND master keys
+  if (OPERATORS[password] || MASTER_KEYS[password]) {
     doLogin();
   }
 }
@@ -215,9 +222,34 @@ function checkAutoLogin() {
 function doLogin() {
   const password = passwordInput.value.trim().toLowerCase();
   
+  // Check master key first
+  if (MASTER_KEYS[password]) {
+    currentOperator = MASTER_KEYS[password].name;
+    currentEkstra = "MASTER"; // Special flag
+    currentRole = "master";
+    
+    operatorNameEl.textContent = currentOperator;
+    operatorEkstraEl.textContent = "🔑 MASTER MODE (All Ekstra)";
+    operatorEkstraEl.classList.add("master-mode");
+    
+    loginScreen.style.display = "none";
+    mainApp.style.display = "block";
+    loginError.style.display = "none";
+    
+    applyLayout();
+    updateModeButton();
+    startClock();
+    loadAllStudents(); // Load ALL students, not just one ekstra
+    
+    if (scanMode === "camera") startScanner();
+    return;
+  }
+  
+  // Regular operator login
   if (OPERATORS[password]) {
     currentOperator = OPERATORS[password].name;
     currentEkstra = OPERATORS[password].ekstra;
+    currentRole = "operator";
     
     operatorNameEl.textContent = currentOperator;
     operatorEkstraEl.textContent = currentEkstra;
@@ -229,16 +261,36 @@ function doLogin() {
     applyLayout();
     updateModeButton();
     startClock();
-    loadStudentsAndUpdateCount();
+    loadStudentsAndUpdateCount(); // Load only their ekstra
     
-    if (scanMode === "camera") {
-      startScanner();
-    }
+    if (scanMode === "camera") startScanner();
   } else {
     loginError.style.display = "block";
     passwordInput.value = "";
     passwordInput.focus();
   }
+}
+
+// New function to load ALL students for master
+async function loadAllStudents() {
+  showLoading(true);
+  try {
+    const today = new Date().toLocaleDateString("id-ID");
+    // Use empty ekstra or special param to get all students
+    const res = await fetch(API_URL + "?action=getStudentsByEkstra&ekstra=ALL&date=" + encodeURIComponent(today));
+    const data = await res.json();
+    
+    if (data.status === "ok") {
+      allStudents = data.data;
+      modeTileValue.textContent = "MASTER";
+      modeTileValue.className = "tile-value tile-mode-master";
+      updateMissingDisplay();
+    }
+  } catch (err) {
+    statusEl.textContent = "Error loading data";
+    statusEl.className = "error";
+  }
+  showLoading(false);
 }
 
 /* LOGOUT */
