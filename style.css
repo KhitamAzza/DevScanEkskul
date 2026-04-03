@@ -1165,3 +1165,19 @@ body {
 #kodeKhususModal button {
   cursor: pointer;
 }
+.master-mode {
+  background: linear-gradient(45deg, #ff6b6b, #feca57) !important;
+  color: #000 !important;
+  font-weight: bold;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.tile-mode-master {
+  background: linear-gradient(45deg, #ff6b6b, #feca57);
+  color: #000;
+}
