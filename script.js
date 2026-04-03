@@ -12,6 +12,7 @@ const OPERATORS = {
 "eksbanjari": { name: "Rahmad Hidayat", ekstra: "Al-Banjari" },
  "ekstari": { name: "Nila", ekstra: "Seni tari" },
  "ekstabog": { name: "M Iqbal", ekstra: "Tata Boga" },
+  "ekstarias": { name: "Afrina", ekstra: "Tata Rias" },
  "ekstapmr": { name: "Nur Khozinatul", ekstra: "PMR" },
  "ekswondo": { name: "jalupaka", ekstra: "Taekwondo" },
  "eksdance": { name: "Ocha", ekstra: "Dance" },
