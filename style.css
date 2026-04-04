@@ -34,7 +34,8 @@
 
 html, body {
   height: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 body {
@@ -42,6 +43,7 @@ body {
   background: var(--bg-deep);
   color: var(--text-primary);
   line-height: 1.5;
+  padding-bottom: 20px;
 }
 
 /* ============================================
@@ -53,7 +55,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 100dvh;
   padding: 20px;
   background: linear-gradient(180deg, var(--bg-deep) 0%, #0f0f1a 100%);
 }
