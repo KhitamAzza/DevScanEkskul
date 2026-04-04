@@ -43,7 +43,6 @@ body {
   background: var(--bg-deep);
   color: var(--text-primary);
   line-height: 1.5;
-  padding-bottom: 20px;
 }
 
 /* ============================================
@@ -55,7 +54,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100dvh;
+  height: 100vh;
   padding: 20px;
   background: linear-gradient(180deg, var(--bg-deep) 0%, #0f0f1a 100%);
 }
@@ -1166,20 +1165,4 @@ body {
 
 #kodeKhususModal button {
   cursor: pointer;
-}
-.master-mode {
-  background: linear-gradient(45deg, #ff6b6b, #feca57) !important;
-  color: #000 !important;
-  font-weight: bold;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
-}
-
-.tile-mode-master {
-  background: linear-gradient(45deg, #ff6b6b, #feca57);
-  color: #000;
 }
