@@ -1,3 +1,10 @@
+function formatDateID(date) {
+  const d = String(date.getDate()).padStart(2, '0');
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const y = date.getFullYear();
+  return `${d}/${m}/${y}`;
+}
+
 const API_URL = "https://script.google.com/macros/s/AKfycbzwgwoKQNXSWn7BrwlzZe1XmVlY0JnGgA6CKY7cjVUXols6Oo_7IyBIiuVDmoQh__wO/exec";
 
 const OPERATORS = {
@@ -12,11 +19,9 @@ const OPERATORS = {
 "eksbanjari": { name: "Rahmad Hidayat", ekstra: "Al-Banjari" },
  "ekstari": { name: "Nila", ekstra: "Seni tari" },
  "ekstabog": { name: "M Iqbal", ekstra: "Tata Boga" },
-  "eksarias": { name: "Afrina", ekstra: "Tata Rias" },
  "ekstapmr": { name: "Nur Khozinatul", ekstra: "PMR" },
  "ekswondo": { name: "jalupaka", ekstra: "Taekwondo" },
  "eksdance": { name: "Ocha", ekstra: "Dance" },
-  "ekscatur": { name: "vanny dwi", ekstra: "Catur" },
  "ekscinalam": { name: "Ergananta", ekstra: "Pecinta Alam" }
 };
 const MASTER_KEYS = {
@@ -277,7 +282,7 @@ function doLogin() {
 async function loadAllStudents() {
   showLoading(true);
   try {
-    const today = new Date().toLocaleDateString("id-ID");
+    const today = formatDateID(new Date());
     // Use empty ekstra or special param to get all students
     const res = await fetch(API_URL + "?action=getStudentsByEkstra&ekstra=ALL&date=" + encodeURIComponent(today));
     const data = await res.json();
@@ -313,7 +318,7 @@ function doLogout() {
 async function loadStudentsAndUpdateCount() {
   showLoading(true);
   try {
-    const today = new Date().toLocaleDateString("id-ID");
+    const today = formatDateID(new Date());
     const res = await fetch(API_URL + "?action=getStudentsByEkstra&ekstra=" + encodeURIComponent(currentEkstra) + "&date=" + encodeURIComponent(today));
     const data = await res.json();
     
