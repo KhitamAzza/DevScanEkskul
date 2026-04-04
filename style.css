@@ -1,0 +1,1339 @@
+/* ============================================
+   QR ABSENSI - FINAL COMPLETE CSS
+   Mobile + Desktop, Camera + Scanner modes
+   ============================================ */
+
+:root {
+  --bg-deep: #0a0a0f;
+  --bg-surface: #151519;
+  --bg-raised: #1f1f24;
+  --bg-placeholder: #252528;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #888888;
+  --text-muted: #555555;
+  
+  --lime: #00ff00;
+  --cyan: #00d4ff;
+  --red: #ff4444;
+  --red-dark: #cc0000;
+  --amber: #ffaa00;
+  
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  
+  --header-height: 56px;
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease-out;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* ============================================
+   LOGIN SCREEN
+   ============================================ */
+
+#loginScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 20px;
+  background: linear-gradient(180deg, var(--bg-deep) 0%, #0f0f1a 100%);
+}
+
+#loginScreen h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+#loginScreen p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+
+#passwordInput {
+  width: 100%;
+  max-width: 280px;
+  padding: 16px 20px;
+  font-size: 18px;
+  border: 2px solid var(--border-subtle);
+  border-radius: 12px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+#passwordInput:focus {
+  outline: none;
+  border-color: var(--lime);
+}
+
+#loginBtn {
+  width: 100%;
+  max-width: 280px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  background: var(--lime);
+  color: var(--bg-deep);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+#loginBtn:active {
+  transform: scale(0.98);
+}
+
+#loginError {
+  color: var(--red);
+  font-size: 14px;
+  margin-top: 16px;
+  display: none;
+}
+
+/* ============================================
+   MAIN APP
+   ============================================ */
+
+#mainApp {
+  display: none;
+  height: 100vh;
+  flex-direction: column;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+#header {
+  height: var(--header-height);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+#operatorInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+#operatorName {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+#operatorEkstra {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+#operatorEkstra.pagi-mode {
+  color: var(--amber);
+}
+
+#headerControls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#modeToggle {
+  padding: 8px 14px;
+  background: var(--bg-raised);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+#modeToggle:active {
+  transform: scale(0.95);
+}
+
+#logoutBtn {
+  padding: 8px 14px;
+  background: var(--red);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#logoutBtn:active {
+  transform: scale(0.95);
+}
+
+/* ============================================
+   SCANNER SECTION - MOBILE BASE
+   ============================================ */
+
+.scanner-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Online dot - mobile top right */
+#connectionStatus {
+  position: fixed;
+  top: calc(var(--header-height) + 12px);
+  right: 16px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 0;
+  color: transparent;
+  background: var(--lime);
+  border: none;
+  z-index: 100;
+  box-shadow: 0 0 0 2px var(--bg-deep), 0 0 0 4px var(--lime);
+}
+
+#connectionStatus.offline {
+  background: var(--red);
+  box-shadow: 0 0 0 2px var(--bg-deep), 0 0 0 4px var(--red);
+}
+
+/* Status text */
+#status {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  min-height: 20px;
+  flex-shrink: 0;
+}
+
+#status.ok { color: var(--lime); }
+#status.error { color: var(--red); }
+#status.scanning { color: var(--cyan); }
+
+/* ============================================
+   DESKTOP STATUS - FLOATING TOAST
+   ============================================ */
+@media screen and (min-width: 768px) {
+  #status {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    
+    background: var(--bg-raised);
+    padding: 10px 20px;
+    border-radius: 999px;
+    border: 1px solid var(--border-subtle);
+    
+    font-size: 14px;
+    font-weight: 600;
+    
+    z-index: 999;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    
+    pointer-events: none;
+    min-width: 220px;
+  }
+
+  #status.ok {
+    color: var(--lime);
+    border-color: var(--lime);
+  }
+
+  #status.error {
+    color: var(--red);
+    border-color: var(--red);
+  }
+
+  #status.scanning {
+    color: var(--cyan);
+  }
+}
+
+/* Camera container */
+#cameraContainer {
+  flex: 0 1 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#reader {
+  width: min(280px, 40vh, calc(100vw - 32px));
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid var(--border-subtle);
+  background: var(--bg-surface);
+}
+
+#reader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}
+
+#reader.scanning {
+  border-color: var(--cyan);
+}
+
+#reader.success {
+  border-color: var(--lime);
+  animation: flashSuccess 300ms ease;
+}
+
+@keyframes flashSuccess {
+  0%, 100% { border-color: var(--lime); }
+  50% { border-color: #ffffff; }
+}
+
+/* Scanner hint */
+.scanner-hint {
+  display: none;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  padding: 20px;
+  background: var(--bg-surface);
+  border-radius: 12px;
+  border: 1px dashed var(--border-subtle);
+}
+
+/* ============================================
+   STUDENT CARD - MOBILE CAMERA MODE
+   ============================================ */
+
+#studentCard {
+  flex: 0 0 auto;
+  background: var(--bg-surface);
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  padding: 16px;
+  display: none;
+}
+
+#studentCard.visible {
+  display: block;
+  animation: slideUp var(--transition-base);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Camera mode: 2 column layout */
+.student-card-inner {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 16px;
+  align-items: center;
+}
+
+.student-photo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#studentPhoto {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 12px;
+  display: none;
+}
+
+#studentPhoto.visible {
+  display: block;
+}
+
+.photo-placeholder {
+  width: 100px;
+  height: 100px;
+  background: var(--bg-placeholder);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+}
+
+.student-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#studentName {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+#studentClass {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+#studentID {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: "SF Mono", Monaco, monospace;
+}
+
+#scanTime {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#scanTime::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--lime);
+}
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+
+.empty-state .photo-placeholder {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 12px;
+}
+
+.empty-state .hint-text {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* Card actions */
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+#pelanggaranBtn {
+  width: 100%;
+  padding: 14px;
+  background: var(--red);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: none;
+}
+
+#pelanggaranBtn.visible {
+  display: block;
+}
+
+#pelanggaranBtn:active {
+  transform: scale(0.98);
+}
+
+#pelanggaranStatus {
+  display: none;
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  padding: 12px;
+}
+
+#pelanggaranStatus.visible {
+  display: block;
+}
+
+.close-btn {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* ============================================
+   BOTTOM TILE - MOBILE
+   ============================================ */
+
+.bottom-tiles {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.info-tile {
+  background: var(--bg-surface);
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.info-tile:hover {
+  background: var(--bg-raised);
+}
+
+.info-tile:active {
+  transform: scale(0.98);
+}
+
+/* Default: hide mode and time tiles on mobile */
+.info-tile.mode-tile,
+.info-tile.time-tile {
+  display: none;
+}
+
+.tile-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--red);
+}
+
+.tile-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+/* ============================================
+   KODE KHUSUS STYLES
+   ============================================ */
+
+.kode-khusus-tile {
+  background: linear-gradient(135deg, var(--bg-raised) 0%, #1a1a2e 100%);
+}
+
+.kode-khusus-tile:active {
+  transform: scale(0.95);
+}
+
+/* Numeric Keypad Buttons */
+.num-btn {
+  padding: 16px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.num-btn:active {
+  background: var(--lime);
+  color: var(--bg-deep);
+  transform: scale(0.95);
+}
+
+/* Missing tile clickable */
+.missing-tile {
+  cursor: pointer;
+}
+
+/* ============================================
+   MISSING LIST SCREEN
+   ============================================ */
+
+#missingScreen {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-deep);
+  z-index: 1000;
+  flex-direction: column;
+}
+
+#missingHeader {
+  height: var(--header-height);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  position: relative;
+}
+
+#missingHeader h2 {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+#backBtn {
+  position: absolute;
+  right: 28px;
+  padding: 8px 14px;
+  background: var(--red);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#missingList {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.missing-item {
+  background: var(--bg-surface);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border-subtle);
+}
+
+.missing-name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.missing-kelas {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.missing-status-note {
+  font-size: 12px;
+  color: var(--amber);
+  margin-top: 4px;
+}
+
+.missing-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+}
+
+.missing-empty .emoji {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+/* ============================================
+   LOADING
+   ============================================ */
+
+#loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 15, 0.95);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 9999;
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--bg-raised);
+  border-top-color: var(--lime);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   MOBILE SCANNER MODE
+   ============================================ */
+
+.mobile-scanner-mode #cameraContainer {
+  display: none;
+}
+
+.mobile-scanner-mode .scanner-hint {
+  display: flex;
+  height: 120px;
+  margin-bottom: 12px;
+}
+
+/* Scanner mode: Large photo, single column */
+.mobile-scanner-mode #studentCard {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-scanner-mode .student-card-inner {
+  grid-template-columns: 1fr;
+  text-align: center;
+  height: 100%;
+}
+
+.mobile-scanner-mode .student-photo-container {
+  margin-bottom: 16px;
+}
+
+.mobile-scanner-mode #studentPhoto,
+.mobile-scanner-mode .photo-placeholder {
+  width: min(200px, 35vh);
+  height: min(200px, 35vh);
+  max-width: 250px;
+  max-height: 250px;
+  margin: 0 auto;
+}
+
+.mobile-scanner-mode .student-info {
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-scanner-mode #studentName {
+  font-size: 22px;
+}
+
+.mobile-scanner-mode #studentClass {
+  font-size: 16px;
+}
+
+.mobile-scanner-mode #studentID {
+  font-size: 14px;
+}
+
+.mobile-scanner-mode #scanTime {
+  font-size: 15px;
+  padding: 8px 16px;
+  background: var(--bg-raised);
+  border-radius: 20px;
+  margin-top: 12px;
+}
+
+.mobile-scanner-mode .card-actions {
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.mobile-scanner-mode #pelanggaranBtn {
+  padding: 16px;
+  font-size: 15px;
+}
+
+/* ============================================
+   MOBILE LAYOUT (≤ 767px) - BOTTOM TILES 2-COLUMN
+   ============================================ */
+
+@media screen and (max-width: 767px) {
+  .bottom-tiles {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px;
+  }
+  
+  /* Show only first 2 tiles (Belum Absen + Kode Khusus) */
+  .bottom-tiles .info-tile:nth-child(1),
+  .bottom-tiles .info-tile:nth-child(2) {
+    display: flex !important;
+  }
+  
+  /* Hide Mode and Time tiles */
+  .bottom-tiles .info-tile:nth-child(3),
+  .bottom-tiles .info-tile:nth-child(4) {
+    display: none !important;
+  }
+  
+  #missingFab {
+    display: none !important;
+  }
+}
+
+/* ============================================
+   DESKTOP LAYOUT (≥ 768px)
+   ============================================ */
+
+@media screen and (min-width: 768px) {
+  /* Header */
+  #header {
+    padding: 0 32px;
+  }
+  
+  #modeToggle {
+    display: none;
+  }
+  
+  /* Scanner section */
+  .scanner-section {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    grid-template-rows: 1fr auto;
+    gap: 24px;
+    padding: 24px 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+    align-items: start;
+  }
+  
+  /* Online dot - desktop bottom right */
+  #connectionStatus {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    top: auto;
+    left: auto;
+  }
+  
+  /* Left column - Camera */
+  #cameraContainer {
+    grid-column: 1;
+    grid-row: 1;
+    position: relative;
+    padding-top: 48px;
+  }
+  
+  /* Mode toggle above camera */
+  #modeToggle {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  #reader {
+    width: 320px;
+    height: 320px;
+  }
+  
+  /* Scanner mode desktop */
+  .pc-scanner-mode #cameraContainer {
+    display: none;
+  }
+  
+  .pc-scanner-mode .scanner-hint {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    height: 320px;
+    width: 320px;
+    margin: 48px auto 0;
+  }
+  
+  /* Right column - Student card */
+  #studentCard {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    border: none;
+    padding: 0;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  /* Desktop: Single column centered */
+  .student-card-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .student-photo-container {
+    margin-bottom: 16px;
+  }
+  
+  #studentPhoto,
+  .photo-placeholder {
+    width: 200px;
+    height: 200px;
+    border-radius: 16px;
+  }
+  
+  .photo-placeholder {
+    font-size: 80px;
+  }
+  
+  #studentName {
+    font-size: 32px;
+    font-weight: 700;
+  }
+  
+  #studentClass {
+    font-size: 18px;
+  }
+  
+  #studentID {
+    font-size: 14px;
+  }
+  
+  #scanTime {
+    font-size: 16px;
+    padding: 10px 20px;
+    background: var(--bg-surface);
+    border-radius: 24px;
+    border: 1px solid var(--border-subtle);
+    display: inline-flex;
+    margin-top: 16px;
+  }
+  
+  /* Card actions - full width below */
+  .card-actions {
+    margin-top: 24px;
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  #pelanggaranBtn {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+  
+  .close-btn {
+    display: none;
+  }
+  
+  /* Empty state desktop */
+  .empty-state {
+    min-height: 320px;
+  }
+  
+  .empty-state .photo-placeholder {
+    width: 160px;
+    height: 160px;
+    font-size: 64px;
+  }
+  
+  /* Bottom tiles - 4 tiles on desktop */
+  .bottom-tiles {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 16px;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  
+  /* Show all tiles on desktop */
+  .bottom-tiles .info-tile:nth-child(1),
+  .bottom-tiles .info-tile:nth-child(2),
+  .bottom-tiles .info-tile:nth-child(3),
+  .bottom-tiles .info-tile:nth-child(4) {
+    display: flex !important;
+  }
+  
+  .info-tile {
+    padding: 20px;
+  }
+  
+  .info-tile:hover {
+    background: var(--bg-raised);
+    transform: translateY(-2px);
+  }
+  
+  .tile-value {
+    font-size: 36px;
+  }
+  
+  .tile-value.missing {
+    color: var(--red);
+  }
+  
+  .tile-label {
+    font-size: 12px;
+    margin-top: 6px;
+  }
+  
+  /* Hide FAB on desktop */
+  #missingFab {
+    display: none !important;
+  }
+  
+  /* Time display hidden */
+  .time-display {
+    display: none !important;
+  }
+  
+  /* Desktop: Hide numeric keypad, show input */
+  #numericKeypad {
+    display: none !important;
+  }
+  
+  #desktopKodeInput {
+    display: block !important;
+  }
+}
+
+/* ============================================
+   MOBILE CLOCK - CENTER & EMPHASIS
+   ============================================ */
+.time-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 8px 0 4px;
+}
+
+.time-big {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* ============================================
+   PELANGGARAN BUTTON STYLES
+   ============================================ */
+.btn-pelanggaran {
+  background: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .btn-pelanggaran {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 50%;
+    font-size: 0;
+  }
+
+  .btn-pelanggaran::after {
+    content: "!";
+  }
+}
+
+/* ============================================
+   KODE KHUSUS MODAL STYLES
+   ============================================ */
+
+#kodeKhususModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 15, 0.95);
+  z-index: 2000;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+#kodeKhususModal > div {
+  background: var(--bg-surface);
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 320px;
+  border: 1px solid var(--border-subtle);
+}
+
+#kodeDisplay {
+  background: var(--bg-raised);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 8px;
+  margin-bottom: 20px;
+  font-family: monospace;
+  min-height: 56px;
+}
+
+#numericKeypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+#desktopKodeInput {
+  display: none;
+  width: 100%;
+  padding: 16px;
+  font-size: 24px;
+  text-align: center;
+  background: var(--bg-raised);
+  border: 2px solid var(--border-subtle);
+  border-radius: 12px;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+#kodeStatus {
+  text-align: center;
+  font-size: 14px;
+  min-height: 20px;
+  margin-bottom: 16px;
+}
+
+#kodeKhususModal button {
+  cursor: pointer;
+}
+.master-mode {
+  background: #dc3545 !important;
+  color: white !important;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.8; }
+  100% { opacity: 1; }
+}
+
+.tile-mode-master {
+  background: #dc3545;
+  color: white;
+}
+/* ============================================
+   MANUAL SYNC BUTTON
+   ============================================ */
+
+#syncButtonContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  flex-shrink: 0;
+}
+
+#manualSyncBtn {
+  position: relative;
+  padding: 10px 16px;
+  background: var(--bg-raised);
+  border: 1.5px solid var(--lime);
+  border-radius: 10px;
+  color: var(--lime);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: auto;
+  height: 40px;
+}
+
+#syncBtnIcon {
+  font-size: 16px;
+}
+
+#syncBtnText {
+  display: inline;
+}
+
+#manualSyncBtn:hover {
+  background: var(--lime);
+  color: var(--bg-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 255, 0, 0.25);
+}
+
+#manualSyncBtn:active {
+  transform: scale(0.96);
+}
+
+#manualSyncBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  border-color: var(--text-muted);
+  color: var(--text-muted);
+  background: var(--bg-raised);
+  transform: none;
+  box-shadow: none;
+}
+
+#manualSyncBtn.sending {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  animation: pulseSync 1.5s infinite;
+}
+
+@keyframes pulseSync {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.queue-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--red);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 8px;
+  min-width: 16px;
+  text-align: center;
+  display: none;
+  border: 2px solid var(--bg-deep);
+}
+
+.queue-badge.visible {
+  display: block;
+}
+
+.sync-status-text {
+  font-size: 11px;
+  color: var(--text-secondary);
+  min-height: 14px;
+  text-align: center;
+  max-width: 200px;
+}
+
+.sync-status-text.success {
+  color: var(--lime);
+}
+
+.sync-status-text.error {
+  color: var(--red);
+}
+
+@media screen and (min-width: 768px) {
+  #syncButtonContainer {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    margin-top: 0;
+    z-index: 100;
+    background: var(--bg-surface);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  
+  #manualSyncBtn {
+    padding: 12px 20px;
+    font-size: 14px;
+    height: 44px;
+    border-width: 2px;
+  }
+  
+  #syncBtnIcon {
+    font-size: 18px;
+  }
+  
+  .sync-status-text {
+    font-size: 12px;
+    max-width: 140px;
+  }
+}
+
+.pc-scanner-mode #syncButtonContainer {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  margin-top: 0;
+  transform: none;
+  width: auto;
+}
+
+.mobile-scanner-mode #syncButtonContainer {
+  display: none;
+}
+
+#missingScreen #syncButtonContainer {
+  display: none !important;
+}
