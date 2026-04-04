@@ -283,9 +283,24 @@ async function loadAllStudents() {
   showLoading(true);
   try {
     const today = formatDateID(new Date());
+
+    console.log("DEBUG - Sending:", {
+      ekstra: currentEkstra,
+      date: today,
+      hour: new Date().getHours()
+    });
     // Use empty ekstra or special param to get all students
     const res = await fetch(API_URL + "?action=getStudentsByEkstra&ekstra=ALL&date=" + encodeURIComponent(today));
     const data = await res.json();
+
+    // ⭐ DEBUG: Check what we received
+    console.log("DEBUG - Received:", {
+      isPagiPeriod: data.isPagiPeriod,
+      isMasterMode: data.isMasterMode,
+      count: data.count,
+      date: data.date,
+      firstStudent: data.data?.[0]
+    });
     
     if (data.status === "ok") {
       allStudents = data.data;
