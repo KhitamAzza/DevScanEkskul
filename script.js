@@ -1,33 +1,15 @@
-function formatDateID(date) {
-  const d = String(date.getDate()).padStart(2, '0');
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const y = date.getFullYear();
-  return `${d}/${m}/${y}`;
-}
-
 const API_URL = "https://script.google.com/macros/s/AKfycbzwgwoKQNXSWn7BrwlzZe1XmVlY0JnGgA6CKY7cjVUXols6Oo_7IyBIiuVDmoQh__wO/exec";
 
 const OPERATORS = {
-"eksesport": { name: "Masduki Zen", ekstra: "E-Sport" },
-"eksfutsal": { name: "Rizky", ekstra: "Futsal" },
-"ekspakbola": { name: "Rico Yoga", ekstra: "Sepakbola" },
-"eksperdiri": { name: "Yudi Setiono", ekstra: "Perisai diri" },
-"eksmusik": { name: "M ismail", ekstra: "Musik" },
-"eksminton": { name: "Deni Affandi", ekstra: "Badminton" },
-"eksbasket": { name: "Syamsul Arif", ekstra: "Basket" },
-"eksbvoli": { name: "Achamd Wahyudi", ekstra: "Bola Voli" },
-"eksbanjari": { name: "Rahmad Hidayat", ekstra: "Al-Banjari" },
- "ekstari": { name: "Nila", ekstra: "Seni tari" },
- "ekstabog": { name: "M Iqbal", ekstra: "Tata Boga" },
- "ekstapmr": { name: "Nur Khozinatul", ekstra: "PMR" },
- "ekswondo": { name: "jalupaka", ekstra: "Taekwondo" },
- "eksdance": { name: "Ocha", ekstra: "Dance" },
- "ekscinalam": { name: "Ergananta", ekstra: "Pecinta Alam" }
+  "ekstabog": { name: "Enggarsari", ekstra: "Tata Boga" },
+  "eksapmr": { name: "Pak Budi", ekstra: "PMR" },
+  "eksbasket": { name: "Bu Siti", ekstra: "Basket" },
+  "eksfutsal": { name: "Pak Agus", ekstra: "Futsal" },
+  "eksminton": { name: "Deni Affandi", ekstra: "Badminton" }
 };
+
 const MASTER_KEYS = {
   "azkiahasna": { name: "Chusnul khitam azza", role: "master" },
-  "devtatib1": { name: "Syamsul Arif", role: "master" },
-  "devtatib2": { name: "Masduki zen", role: "master" },
   "devkoord2": { name: "Prihanto Wahyu", role: "master" }
 };
 
@@ -282,25 +264,10 @@ function doLogin() {
 async function loadAllStudents() {
   showLoading(true);
   try {
-    const today = formatDateID(new Date());
-
-    console.log("DEBUG - Sending:", {
-      ekstra: currentEkstra,
-      date: today,
-      hour: new Date().getHours()
-    });
+    const today = new Date().toLocaleDateString("id-ID");
     // Use empty ekstra or special param to get all students
     const res = await fetch(API_URL + "?action=getStudentsByEkstra&ekstra=ALL&date=" + encodeURIComponent(today));
     const data = await res.json();
-
-    // ⭐ DEBUG: Check what we received
-    console.log("DEBUG - Received:", {
-      isPagiPeriod: data.isPagiPeriod,
-      isMasterMode: data.isMasterMode,
-      count: data.count,
-      date: data.date,
-      firstStudent: data.data?.[0]
-    });
     
     if (data.status === "ok") {
       allStudents = data.data;
@@ -333,7 +300,7 @@ function doLogout() {
 async function loadStudentsAndUpdateCount() {
   showLoading(true);
   try {
-    const today = formatDateID(new Date());
+    const today = new Date().toLocaleDateString("id-ID");
     const res = await fetch(API_URL + "?action=getStudentsByEkstra&ekstra=" + encodeURIComponent(currentEkstra) + "&date=" + encodeURIComponent(today));
     const data = await res.json();
     
