@@ -12,18 +12,13 @@ const OPERATORS = {
 "eksbanjari": { name: "Rahmad Hidayat", ekstra: "Al-Banjari" },
  "ekstari": { name: "Nila", ekstra: "Seni tari" },
  "ekstabog": { name: "M Iqbal", ekstra: "Tata Boga" },
+ "eksarias": { name: "Dina", ekstra: "Tata rias" },
  "ekstapmr": { name: "Nur Khozinatul", ekstra: "PMR" },
  "ekswondo": { name: "jalupaka", ekstra: "Taekwondo" },
  "eksdance": { name: "Ocha", ekstra: "Dance" },
  "ekscinalam": { name: "Ergananta", ekstra: "Pecinta Alam" }
 };
 
-const MASTER_KEYS = {
-  "azkiahasna": { name: "Chusnul khitam azza", role: "master" },
-  "devkoord1": { name: "syamsul arif", role: "master" },
-  "devkoord2": { name: "Prihanto Wahyu", role: "master" },
-  "devkoord3": { name: "Masduki zen", role: "master" }
-};
 
 let currentOperator = null;
 let currentEkstra = null;
@@ -212,9 +207,7 @@ function markPelanggaran() {
 /* AUTO LOGIN */
 function checkAutoLogin() {
   const password = passwordInput.value.trim().toLowerCase();
-  
-  // Check both regular operators AND master keys
-  if (OPERATORS[password] || MASTER_KEYS[password]) {
+  if (OPERATORS[password]) {
     doLogin();
   }
 }
@@ -223,34 +216,9 @@ function checkAutoLogin() {
 function doLogin() {
   const password = passwordInput.value.trim().toLowerCase();
   
-  // Check master key first
-  if (MASTER_KEYS[password]) {
-    currentOperator = MASTER_KEYS[password].name;
-    currentEkstra = "MASTER"; // Special flag
-    currentRole = "master";
-    
-    operatorNameEl.textContent = currentOperator;
-    operatorEkstraEl.textContent = "🔑 MASTER MODE (All Ekstra)";
-    operatorEkstraEl.classList.add("master-mode");
-    
-    loginScreen.style.display = "none";
-    mainApp.style.display = "block";
-    loginError.style.display = "none";
-    
-    applyLayout();
-    updateModeButton();
-    startClock();
-    loadAllStudents(); // Load ALL students, not just one ekstra
-    
-    if (scanMode === "camera") startScanner();
-    return;
-  }
-  
-  // Regular operator login
   if (OPERATORS[password]) {
     currentOperator = OPERATORS[password].name;
     currentEkstra = OPERATORS[password].ekstra;
-    currentRole = "operator";
     
     operatorNameEl.textContent = currentOperator;
     operatorEkstraEl.textContent = currentEkstra;
@@ -262,36 +230,16 @@ function doLogin() {
     applyLayout();
     updateModeButton();
     startClock();
-    loadStudentsAndUpdateCount(); // Load only their ekstra
+    loadStudentsAndUpdateCount();
     
-    if (scanMode === "camera") startScanner();
+    if (scanMode === "camera") {
+      startScanner();
+    }
   } else {
     loginError.style.display = "block";
     passwordInput.value = "";
     passwordInput.focus();
   }
-}
-
-// New function to load ALL students for master
-async function loadAllStudents() {
-  showLoading(true);
-  try {
-    const today = new Date().toLocaleDateString("id-ID");
-    // Use empty ekstra or special param to get all students
-    const res = await fetch(API_URL + "?action=getStudentsByEkstra&ekstra=ALL&date=" + encodeURIComponent(today));
-    const data = await res.json();
-    
-    if (data.status === "ok") {
-      allStudents = data.data;
-      modeTileValue.textContent = "MASTER";
-      modeTileValue.className = "tile-value tile-mode-master";
-      updateMissingDisplay();
-    }
-  } catch (err) {
-    statusEl.textContent = "Error loading data";
-    statusEl.className = "error";
-  }
-  showLoading(false);
 }
 
 /* LOGOUT */
@@ -759,14 +707,7 @@ async function submitKodeKhusus() {
     const hour = new Date().getHours();
     const scanType = (hour >= 5 && hour < 8) ? "PAGI" : "EKSTRA";
     
-    // ⭐ FIXED: Correct variable names (kode not code, currentOperator not operator, type not scanType)
-    const res = await fetch(
-      `${API_URL}?action=useSpecialCode` +
-      `&code=${kode}` +
-      `&operator=${encodeURIComponent(currentOperator)}` +
-      `&type=${scanType}`
-    );
-    
+    const res = await fetch(`${API_URL}?action=useSpecialCode&code=${kode}&operator=${currentOperator}&scanType=${scanType}`)
     const data = await res.json();
     
     const kodeStatus = document.getElementById("kodeStatus");
@@ -837,7 +778,6 @@ async function submitKodeKhusus() {
       kodeStatus.textContent = "❌ Network error";
       kodeStatus.style.color = "var(--red)";
     }
-    console.error("Kode Khusus Error:", err);
   }
   
   isSubmittingKode = false;
