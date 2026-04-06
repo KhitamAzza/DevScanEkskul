@@ -2,6 +2,8 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzwgwoKQNXSWn7BrwlzZe1X
 
 const OPERATORS = {
 "azkiahasna": { name: "Chusnul Khitam Azza", ekstra: "MASTER", isMaster: true },
+ "devkoord1": { name: "Prihanto Wahyu", ekstra: "MASTER", isMaster: true },
+ "devtatib1": { name: "Syamsul Arif", ekstra: "MASTER", isMaster: true },
 "eksesport": { name: "Masduki Zen", ekstra: "E-Sport" },
 "eksfutsal": { name: "Rizky", ekstra: "Futsal" },
 "ekspakbola": { name: "Rico Yoga", ekstra: "Sepakbola" },
@@ -323,56 +325,109 @@ async function loadStudentsAndUpdateCount() {
   showLoading(false);
 }
 /* MISSING FUNCTIONS */
+// REPLACE updateMissingDisplay function
 function updateMissingDisplay() {
-  const missing = getMissingStudents();
+  const notScanned = getNotScannedStudents();
+  const scanned = getScannedStudents();
+  const illegal = getIllegalStudents();
+  
   const tileValue = document.getElementById('missingTileValue');
-  if (tileValue) tileValue.textContent = missing.length;
-  window.missingStudents = missing;
+  
+  if (notScanned.length === 0) {
+    tileValue.innerHTML = '<span style="color: #4CAF50">Scan selesai</span>';
+  } else {
+    tileValue.innerHTML = `<span style="color: #f44336">${notScanned.length}</span> | <span style="color: #4CAF50">${scanned.length}</span>`;
+  }
+  
+  window.notScannedStudents = notScanned;
+  window.scannedStudents = scanned;
+  window.illegalStudents = illegal;
 }
 
-function getMissingStudents() {
+// ADD these helper functions
+function getNotScannedStudents() {
   const hour = new Date().getHours();
   const isEkstraPeriod = hour >= 8 && hour < 22;
   
   return allStudents.filter(s => {
     const status = s.status || "";
-    if (["ILLEGAL", "HADIR", "EKSTRA"].includes(status)) return false;
+    if (status === "ILLEGAL") return false;
+    if (["HADIR", "EKSTRA", "TERLAMBAT"].includes(status)) return false;
     if (isEkstraPeriod && status === "PAGI") return true;
     if (!status) return true;
     return false;
   });
 }
 
-function showMissingList() {
+function getScannedStudents() {
   const hour = new Date().getHours();
   const isEkstraPeriod = hour >= 8 && hour < 22;
-  const missing = window.missingStudents || [];
   
-  if (missing.length === 0) {
-    missingListEl.innerHTML = `
-      <div class="missing-empty">
-        <div class="emoji">🎉</div>
-        <div>Semua siswa sudah absen!</div>
+  return allStudents.filter(s => {
+    const status = s.status || "";
+    if (status === "ILLEGAL") return false;
+    if (["HADIR", "EKSTRA", "TERLAMBAT"].includes(status)) return true;
+    if (!isEkstraPeriod && status === "PAGI") return true;
+    return false;
+  });
+}
+
+function getIllegalStudents() {
+  return allStudents.filter(s => s.status === "ILLEGAL");
+}
+
+// REPLACE showMissingList function
+function showMissingList() {
+  const notScanned = window.notScannedStudents || [];
+  const scanned = window.scannedStudents || [];
+  const illegal = window.illegalStudents || [];
+  
+  let html = '';
+  
+  // NOT SCANNED
+  if (notScanned.length > 0) {
+    html += `<div style="color: #f44336; font-weight: bold; margin: 10px 0;">BELUM SCAN (${notScanned.length})</div>`;
+    html += notScanned.map(s => `
+      <div class="missing-item" style="border-left: 3px solid #f44336; padding-left: 10px; margin: 5px 0;">
+        <div style="font-weight: bold;">${s.nama}</div>
+        <div style="font-size: 12px; color: #666;">Kelas ${s.kelas}${s.status === "PAGI" ? ' (PAGI saja)' : ''}</div>
       </div>
-    `;
-  } else {
-    missingListEl.innerHTML = missing.map(s => {
-      let statusNote = "";
-      if (isEkstraPeriod && s.status === "PAGI") {
-        statusNote = '<div class="missing-status-note">(PAGI saja)</div>';
-      }
-      return `
-        <div class="missing-item">
-          <div>
-            <div class="missing-name">${s.nama}</div>
-            <div class="missing-kelas">Kelas ${s.kelas}</div>
-            ${statusNote}
-          </div>
-        </div>
-      `;
-    }).join("");
+    `).join("");
   }
   
+  // SEPARATOR
+  if (scanned.length > 0 && notScanned.length > 0) {
+    html += `<div style="border-top: 1px solid #ccc; margin: 15px 0;"></div>`;
+  }
+  
+  // SCANNED
+  if (scanned.length > 0) {
+    html += `<div style="color: #4CAF50; font-weight: bold; margin: 10px 0;">SUDAH SCAN (${scanned.length})</div>`;
+    html += scanned.map(s => `
+      <div class="missing-item" style="border-left: 3px solid #4CAF50; padding-left: 10px; margin: 5px 0; opacity: 0.8;">
+        <div style="font-weight: bold;">${s.nama}</div>
+        <div style="font-size: 12px; color: #666;">Kelas ${s.kelas} - ${s.status}</div>
+      </div>
+    `).join("");
+  }
+  
+  // ILLEGAL (BOTTOM)
+  if (illegal.length > 0) {
+    html += `<div style="color: #d32f2f; font-weight: bold; margin: 15px 0 10px;">ILLEGAL (${illegal.length})</div>`;
+    html += illegal.map(s => `
+      <div class="missing-item" style="border-left: 3px solid #d32f2f; padding-left: 10px; margin: 5px 0; background: #ffebee;">
+        <div style="font-weight: bold; color: #d32f2f;">${s.nama}</div>
+        <div style="font-size: 12px;">Kelas ${s.kelas}</div>
+      </div>
+    `).join("");
+  }
+  
+  // Empty state
+  if (notScanned.length === 0 && scanned.length === 0 && illegal.length === 0) {
+    html = '<div style="text-align: center; padding: 20px;">Tidak ada data</div>';
+  }
+  
+  missingListEl.innerHTML = html;
   mainApp.style.display = "none";
   missingScreen.style.display = "flex";
 }
