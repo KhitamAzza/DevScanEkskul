@@ -415,8 +415,8 @@ function showMissingList() {
   if (illegal.length > 0) {
     html += `<div style="color: #d32f2f; font-weight: bold; margin: 15px 0 10px;">ILLEGAL (${illegal.length})</div>`;
     html += illegal.map(s => `
-      <div class="missing-item" style="border-left: 3px solid #d32f2f; padding-left: 10px; margin: 5px 0; background: #ffebee;">
-        <div style="font-weight: bold; color: #d32f2f;">${s.nama}</div>
+      <div class="missing-item" style="border-left: 3px solid #ffffff; padding-left: 10px; margin: 5px 0; background: #ff0000;">
+        <div style="font-weight: bold; color: #eaff00;">${s.nama}</div>
         <div style="font-size: 12px;">Kelas ${s.kelas}</div>
       </div>
     `).join("");
