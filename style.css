@@ -4,22 +4,27 @@
    ============================================ */
 
 :root {
-  --bg-deep: #0a0a0f;
-  --bg-surface: #151519;
-  --bg-raised: #1f1f24;
-  --bg-placeholder: #252528;
+  --bg-deep: #0f172a;
+  --bg-surface: #1e293b;
+  --bg-raised: #334155;
+  --bg-placeholder: #475569;
   
-  --text-primary: #ffffff;
-  --text-secondary: #888888;
-  --text-muted: #555555;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
   
-  --lime: #00ff00;
-  --cyan: #00d4ff;
-  --red: #ff4444;
-  --red-dark: #cc0000;
-  --amber: #ffaa00;
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --primary-dark: #4f46e5;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --danger-dark: #dc2626;
+  --info: #06b6d4;
   
-  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-subtle: rgba(99, 102, 241, 0.15);
+  --border-default: rgba(148, 163, 184, 0.2);
+  
   
   --header-height: 56px;
   --transition-fast: 150ms ease;
@@ -56,7 +61,7 @@ body {
   justify-content: center;
   height: 100vh;
   padding: 20px;
-  background: linear-gradient(180deg, var(--bg-deep) 0%, #0f0f1a 100%);
+  background: linear-gradient(180deg, var(--bg-deep) 0%, #1e1b4b 100%);
 }
 
 #loginScreen h1 {
@@ -86,7 +91,7 @@ body {
 
 #passwordInput:focus {
   outline: none;
-  border-color: var(--lime);
+  border-color: var(--primary);
 }
 
 #loginBtn {
@@ -95,7 +100,7 @@ body {
   padding: 16px;
   font-size: 16px;
   font-weight: 600;
-  background: var(--lime);
+  background: var(--primary);
   color: var(--bg-deep);
   border: none;
   border-radius: 12px;
@@ -108,7 +113,7 @@ body {
 }
 
 #loginError {
-  color: var(--red);
+  color: var(--danger);
   font-size: 14px;
   margin-top: 16px;
   display: none;
@@ -155,7 +160,7 @@ body {
 }
 
 #operatorEkstra.pagi-mode {
-  color: var(--amber);
+  color: var(--warning);
 }
 
 #headerControls {
@@ -181,7 +186,7 @@ body {
 
 #logoutBtn {
   padding: 8px 14px;
-  background: var(--red);
+  background: var(--danger);
   color: white;
   border: none;
   border-radius: 8px;
@@ -193,7 +198,48 @@ body {
 #logoutBtn:active {
   transform: scale(0.95);
 }
+/* ============================================
+   BACK FAB (MISSING SCREEN ONLY)
+   ============================================ */
 
+#backFab {
+  position: fixed;
+  bottom: 30px;
+  right: 20px;
+  
+  width: 80px;
+  height: 80px;
+  
+  border-radius: 50%;
+  border: none;
+  
+  background: var(--danger);
+  color: white;
+  
+  font-size: 22px;
+  font-weight: bold;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+  z-index: 1100;
+  
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+#backFab:active {
+  transform: scale(0.9);
+}
+
+#backFab img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  pointer-events: none; /* so clicks go to button */
+}
 /* ============================================
    SCANNER SECTION - MOBILE BASE
    ============================================ */
@@ -219,15 +265,15 @@ body {
   padding: 0;
   font-size: 0;
   color: transparent;
-  background: var(--lime);
+  background: var(--success);
   border: none;
   z-index: 100;
-  box-shadow: 0 0 0 2px var(--bg-deep), 0 0 0 4px var(--lime);
+  box-shadow: 0 0 0 2px var(--bg-deep), 0 0 0 4px var(--success);
 }
 
 #connectionStatus.offline {
-  background: var(--red);
-  box-shadow: 0 0 0 2px var(--bg-deep), 0 0 0 4px var(--red);
+  background: var(--danger);
+  box-shadow: 0 0 0 2px var(--bg-deep), 0 0 0 4px var(--danger);
 }
 
 /* Status text */
@@ -239,9 +285,9 @@ body {
   flex-shrink: 0;
 }
 
-#status.ok { color: var(--lime); }
-#status.error { color: var(--red); }
-#status.scanning { color: var(--cyan); }
+#status.ok { color: var(--success); }
+#status.error { color: var(--danger); }
+#status.scanning { color: var(--info); }
 
 /* ============================================
    DESKTOP STATUS - FLOATING TOAST
@@ -269,17 +315,17 @@ body {
   }
 
   #status.ok {
-    color: var(--lime);
-    border-color: var(--lime);
+    color: var(--success);
+    border-color: var(--success);
   }
 
   #status.error {
-    color: var(--red);
-    border-color: var(--red);
+    color: var(--danger);
+    border-color: var(--danger);
   }
 
   #status.scanning {
-    color: var(--cyan);
+    color: var(--info);
   }
 }
 
@@ -307,17 +353,17 @@ body {
 }
 
 #reader.scanning {
-  border-color: var(--cyan);
+  border-color: var(--info);
 }
 
 #reader.success {
-  border-color: var(--lime);
+  border-color: var(--success);
   animation: flashSuccess 300ms ease;
 }
 
 @keyframes flashSuccess {
-  0%, 100% { border-color: var(--lime); }
-  50% { border-color: #ffffff; }
+  0%, 100% { border-color: var(--success); }
+  50% { border-color: var(--primary-light); }
 }
 
 /* Scanner hint */
@@ -430,7 +476,7 @@ body {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--lime);
+  background: var(--success);
 }
 
 /* Empty state */
@@ -464,7 +510,7 @@ body {
 #pelanggaranBtn {
   width: 100%;
   padding: 14px;
-  background: var(--red);
+  background: var(--danger);
   color: white;
   border: none;
   border-radius: 10px;
@@ -484,7 +530,7 @@ body {
 
 #pelanggaranStatus {
   display: none;
-  color: var(--red);
+  color: var(--danger);
   font-size: 13px;
   font-weight: 600;
   text-align: center;
@@ -548,7 +594,7 @@ body {
 .tile-value {
   font-size: 24px;
   font-weight: 700;
-  color: var(--red);
+  color: var(--danger);
 }
 
 .tile-label {
@@ -564,7 +610,7 @@ body {
    ============================================ */
 
 .kode-khusus-tile {
-  background: linear-gradient(135deg, var(--bg-raised) 0%, #1a1a2e 100%);
+  background: linear-gradient(135deg, var(--bg-raised) 0%, var(--bg-deep) 100%);
 }
 
 .kode-khusus-tile:active {
@@ -585,7 +631,7 @@ body {
 }
 
 .num-btn:active {
-  background: var(--lime);
+  background: var(--primary);
   color: var(--bg-deep);
   transform: scale(0.95);
 }
@@ -627,19 +673,6 @@ body {
   font-weight: 600;
 }
 
-#backBtn {
-  position: absolute;
-  right: 28px;
-  padding: 8px 14px;
-  background: var(--red);
-  color: white;
-  border: none;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
 #missingList {
   flex: 1;
   padding: 16px;
@@ -667,7 +700,7 @@ body {
 
 .missing-status-note {
   font-size: 12px;
-  color: var(--amber);
+  color: var(--warning);
   margin-top: 4px;
 }
 
@@ -695,7 +728,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(10, 10, 15, 0.95);
+  background: rgba(15, 23, 42, 0.95);
   display: none;
   justify-content: center;
   align-items: center;
@@ -707,7 +740,7 @@ body {
   width: 40px;
   height: 40px;
   border: 3px solid var(--bg-raised);
-  border-top-color: var(--lime);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -1013,7 +1046,7 @@ body {
   }
   
   .tile-value.missing {
-    color: var(--red);
+    color: var(--danger);
   }
   
   .tile-label {
@@ -1066,7 +1099,7 @@ body {
    PELANGGARAN BUTTON STYLES
    ============================================ */
 .btn-pelanggaran {
-  background: #ff4d4f;
+  background: var(--danger);
   color: white;
   border: none;
   padding: 8px 14px;
@@ -1106,7 +1139,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(10, 10, 15, 0.95);
+  background: rgba(15, 23, 42, 0.95);
   z-index: 2000;
   flex-direction: column;
   align-items: center;
@@ -1167,7 +1200,7 @@ body {
   cursor: pointer;
 }
 .master-mode {
-  background: #dc3545 !important;
+  background: var(--danger) !important;
   color: white !important;
   animation: pulse 2s infinite;
 }
@@ -1179,7 +1212,7 @@ body {
 }
 
 .tile-mode-master {
-  background: #dc3545;
+  background: var(--danger);
   color: white;
 }
 /* ============================================
@@ -1199,9 +1232,9 @@ body {
   position: relative;
   padding: 10px 16px;
   background: var(--bg-raised);
-  border: 1.5px solid var(--lime);
+  border: 1.5px solid var(--primary);
   border-radius: 10px;
-  color: var(--lime);
+  color: var(--primary);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -1223,10 +1256,10 @@ body {
 }
 
 #manualSyncBtn:hover {
-  background: var(--lime);
+  background: var(--primary);
   color: var(--bg-deep);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 255, 0, 0.25);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
 }
 
 #manualSyncBtn:active {
@@ -1244,8 +1277,8 @@ body {
 }
 
 #manualSyncBtn.sending {
-  border-color: var(--cyan);
-  color: var(--cyan);
+  border-color: var(--info);
+  color: var(--info);
   animation: pulseSync 1.5s infinite;
 }
 
@@ -1258,7 +1291,7 @@ body {
   position: absolute;
   top: -6px;
   right: -6px;
-  background: var(--red);
+  background: var(--danger);
   color: white;
   font-size: 10px;
   font-weight: 700;
@@ -1283,11 +1316,11 @@ body {
 }
 
 .sync-status-text.success {
-  color: var(--lime);
+  color: var(--primary);
 }
 
 .sync-status-text.error {
-  color: var(--red);
+  color: var(--danger);
 }
 
 @media screen and (min-width: 768px) {
