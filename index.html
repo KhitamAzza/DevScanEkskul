@@ -39,7 +39,7 @@
     </div>
     <div id="headerControls">
       <button id="modeToggle" onclick="toggleMode()">📷 Camera</button>
-      <button id="logoutBtn" onclick="doLogout()">🚪 Keluar</button>
+      <button id="logoutBtn" onclick="doLogout()"> Keluar</button>
     </div>
   </div>
   
@@ -131,7 +131,7 @@
   <!-- Floating Action Button for Missing List (Mobile Only) -->
   <div id="missingFab" onclick="showMissingList()">
     <div id="fabCount" style="font-size: 12px; display: flex; gap: 4px; align-items: center;">
-      <span style="color: #f44336;">0</span>|<span style="color: #4CAF50;">0</span>
+      <span style="color: var(--danger);">0</span>|<span style="color: var(--success);">0</span>
     </div>
   </div>
   
@@ -142,12 +142,15 @@
      ============================================ -->
 <div id="missingScreen" style="display: none;">
   <div id="missingHeader">
-    <button id="backBtn" onclick="hideMissingList()">⬅️</button>
+    
     <h2>SISWA</h2>
   </div>
-  
+  <button id="backFab" onclick="hideMissingList()">
+  <img src="Back.png">
+</button>
   <div id="missingList">
     <!-- Populated by JS -->
+     
   </div>
 </div>
 
@@ -203,5 +206,6 @@
 <audio id="illegalSound" src="Illegal.mp3" preload="auto"></audio>
 
 <script src="script.js"></script>
+
 </body>
 </html>
