@@ -495,31 +495,51 @@ function processStudentScan(decodedText) {
   }
   
   const student = allStudents.find(s => s.id === decodedText);
-if (!student) {
-  statusEl.textContent = "❌ Siswa tidak ditemukan";
-  statusEl.className = "error";
-  playSound("errorSound");
-  return;
-}
-
-// ⭐ MASTER MODE: Skip ekstra validation
-const isMaster = currentEkstra === "MASTER";
-if (!isMaster) {
-  // Normal mode: Check if student belongs to this ekstra during ekstra period
-  const hour = new Date().getHours();
-  const isPagiPeriod = hour >= 5 && hour < 8;
-  
-  if (!isPagiPeriod && student.ekstra && student.ekstra.toLowerCase() !== currentEkstra.toLowerCase()) {
-    statusEl.textContent = "❌ Siswa tidak terdaftar di " + currentEkstra;
+  if (!student) {
+    statusEl.textContent = "❌ Siswa tidak ditemukan";
     statusEl.className = "error";
     playSound("errorSound");
     return;
   }
-}
+
+  // ⭐ MASTER MODE: Skip ekstra validation
+  const isMaster = currentEkstra === "MASTER";
+  if (!isMaster) {
+    // Normal mode: Check if student belongs to this ekstra during ekstra period
+    const isPagiPeriod = hour >= 5 && hour < 7;
+    
+    if (!isPagiPeriod && student.ekstra && student.ekstra.toLowerCase() !== currentEkstra.toLowerCase()) {
+      statusEl.textContent = "❌ Siswa tidak terdaftar di " + currentEkstra;
+      statusEl.className = "error";
+      playSound("errorSound");
+      return;
+    }
+  }
   
   const isEkstraPeriod = hour >= 8 && hour < 22;
   let scanType = isEkstraPeriod ? "EKSTRA" : "PAGI";
   
+  // ⭐ FIX: Check local queue FIRST before server status
+  let scans = JSON.parse(localStorage.getItem("scanQueue") || "[]");
+  
+  // Check if already marked ILLEGAL in queue (prevents loophole)
+  const illegalInQueue = scans.some(s => s.id === decodedText && s.type === "ILLEGAL");
+  if (illegalInQueue) {
+    statusEl.textContent = "❌ " + student.nama + " sudah ditandai ILLEGAL (menunggu sinkronisasi)";
+    statusEl.className = "error";
+    playSound("errorSound");
+    return;
+  }
+  
+  // Check if same scan type already in queue
+  const existsInQueue = scans.some(s => s.id === decodedText && s.type === scanType);
+  if (existsInQueue) {
+    statusEl.textContent = "❌ " + student.nama + " sudah di queue";
+    statusEl.className = "error";
+    return;
+  }
+  
+  // Check server-side status
   if (student.status === "ILLEGAL") {
     statusEl.textContent = "❌ " + student.nama + " sudah ditandai ILLEGAL";
     statusEl.className = "error";
@@ -538,17 +558,10 @@ if (!isMaster) {
     return;
   }
   
-  let scans = JSON.parse(localStorage.getItem("scanQueue") || "[]");
-  const existsInQueue = scans.some(s => s.id === decodedText && s.type === scanType);
-  if (existsInQueue) {
-    statusEl.textContent = "❌ " + student.nama + " sudah di queue";
-    statusEl.className = "error";
-    return;
-  }
-  
+  // Add to queue
   scans.push({ id: decodedText, type: scanType, time: now, operator: currentOperator });
   localStorage.setItem("scanQueue", JSON.stringify(scans));
-    updateQueueBadge();
+  updateQueueBadge();
   
   playSound("beepSound");
   statusEl.textContent = "✔ " + student.nama + " (" + scanType + ")";
@@ -560,7 +573,7 @@ if (!isMaster) {
   
   showStudentCard(student, scanType);
   clearTimeout(sendTimer);
-  sendTimer = setTimeout(sendQueue, 15000);
+  sendTimer = setTimeout(sendQueue, 30000);
 }
 
 /* SHOW STUDENT CARD */
@@ -943,7 +956,7 @@ async function submitKodeKhusus() {
   
   try {
     const hour = new Date().getHours();
-    const scanType = (hour >= 5 && hour < 8) ? "PAGI" : "EKSTRA";
+    const scanType = (hour >= 5 && hour < 7) ? "PAGI" : "EKSTRA";
     
     const res = await fetch(`${API_URL}?action=useSpecialCode&code=${kode}&operator=${currentOperator}&scanType=${scanType}`)
     const data = await res.json();
