@@ -346,8 +346,12 @@ function updateMissingDisplay() {
 
 // ADD these helper functions
 function getNotScannedStudents() {
-  const hour = new Date().getHours();
-  const isEkstraPeriod = hour >= 8 && hour < 22;
+  const now = new Date();
+const hour = now.getHours();
+const minutes = now.getMinutes();
+const timeValue = hour + (minutes / 100);
+const isEkstraPeriod = (timeValue >= 10.00 && timeValue < 11.00);
+const isPagiPeriod = (timeValue >= 5.00 && timeValue < 7.30);
   
   return allStudents.filter(s => {
     const status = s.status || "";
@@ -360,8 +364,12 @@ function getNotScannedStudents() {
 }
 
 function getScannedStudents() {
-  const hour = new Date().getHours();
-  const isEkstraPeriod = hour >= 8 && hour < 22;
+  const now = new Date();
+const hour = now.getHours();
+const minutes = now.getMinutes();
+const timeValue = hour + (minutes / 100);
+const isEkstraPeriod = (timeValue >= 10.00 && timeValue < 11.00);
+const isPagiPeriod = (timeValue >= 5.00 && timeValue < 7.30);
   
   return allStudents.filter(s => {
     const status = s.status || "";
@@ -486,8 +494,12 @@ function processStudentScan(decodedText) {
   if (now - lastScan < 2000) return;
   lastScan = now;
   
-  const hour = new Date().getHours();
-  if (hour < 5 || hour >= 22) {
+  const now = new Date();
+const hour = now.getHours();
+const minutes = now.getMinutes();
+const timeValue = hour + (minutes / 100); // e.g., 7:30 = 7.30
+
+if (timeValue < 5.00 || timeValue >= 11.00) {
     statusEl.textContent = "❌ Di luar jam absensi";
     statusEl.className = "error";
     playSound("errorSound");
@@ -516,8 +528,17 @@ function processStudentScan(decodedText) {
     }
   }
   
-  const isEkstraPeriod = hour >= 8 && hour < 22;
-  let scanType = isEkstraPeriod ? "EKSTRA" : "PAGI";
+  const isPagiPeriod = (timeValue >= 5.00 && timeValue < 7.30);
+const isEkstraPeriod = (timeValue >= 10.00 && timeValue < 11.00);
+
+if (!isPagiPeriod && !isEkstraPeriod) {
+  statusEl.textContent = "❌ Di luar jam absensi";
+  statusEl.className = "error";
+  playSound("errorSound");
+  return;
+}
+
+let scanType = isEkstraPeriod ? "EKSTRA" : "PAGI";
   
   // ⭐ FIX: Check local queue FIRST before server status
   let scans = JSON.parse(localStorage.getItem("scanQueue") || "[]");
