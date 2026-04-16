@@ -1155,15 +1155,13 @@ body {
   /* Manual sync */
   #syncButtonContainer {
     position: fixed;
-    bottom: 24px;
-    left: 24px;
+    bottom: 138px;
+    left: 269px;
     margin-top: 0;
     z-index: 100;
     background: var(--bg-surface);
     padding: 12px;
     border-radius: 12px;
-    border: 1px solid var(--border-subtle);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
     gap: 6px;
   }
   
