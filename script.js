@@ -494,12 +494,12 @@ function processStudentScan(decodedText) {
   if (now - lastScan < 2000) return;
   lastScan = now;
   
-  const now = new Date();
-const hour = now.getHours();
-const minutes = now.getMinutes();
-const timeValue = hour + (minutes / 100); // e.g., 7:30 = 7.30
+  const dt = new Date();
+  const hour = dt.getHours();
+  const minutes = dt.getMinutes();
+  const timeValue = hour + (minutes / 100);
 
-if (timeValue < 5.00 || timeValue >= 11.00) {
+  if (timeValue < 5.00 || timeValue >= 11.00) {
     statusEl.textContent = "❌ Di luar jam absensi";
     statusEl.className = "error";
     playSound("errorSound");
@@ -514,11 +514,9 @@ if (timeValue < 5.00 || timeValue >= 11.00) {
     return;
   }
 
-  // ⭐ MASTER MODE: Skip ekstra validation
   const isMaster = currentEkstra === "MASTER";
   if (!isMaster) {
-    // Normal mode: Check if student belongs to this ekstra during ekstra period
-    const isPagiPeriod = hour >= 5 && hour < 7;
+    const isPagiPeriod = (timeValue >= 5.00 && timeValue < 7.30);
     
     if (!isPagiPeriod && student.ekstra && student.ekstra.toLowerCase() !== currentEkstra.toLowerCase()) {
       statusEl.textContent = "❌ Siswa tidak terdaftar di " + currentEkstra;
@@ -529,21 +527,19 @@ if (timeValue < 5.00 || timeValue >= 11.00) {
   }
   
   const isPagiPeriod = (timeValue >= 5.00 && timeValue < 7.30);
-const isEkstraPeriod = (timeValue >= 10.00 && timeValue < 11.00);
+  const isEkstraPeriod = (timeValue >= 10.00 && timeValue < 11.00);
 
-if (!isPagiPeriod && !isEkstraPeriod) {
-  statusEl.textContent = "❌ Di luar jam absensi";
-  statusEl.className = "error";
-  playSound("errorSound");
-  return;
-}
+  if (!isPagiPeriod && !isEkstraPeriod) {
+    statusEl.textContent = "❌ Di luar jam absensi";
+    statusEl.className = "error";
+    playSound("errorSound");
+    return;
+  }
 
-let scanType = isEkstraPeriod ? "EKSTRA" : "PAGI";
+  let scanType = isEkstraPeriod ? "EKSTRA" : "PAGI";
   
-  // ⭐ FIX: Check local queue FIRST before server status
   let scans = JSON.parse(localStorage.getItem("scanQueue") || "[]");
   
-  // Check if already marked ILLEGAL in queue (prevents loophole)
   const illegalInQueue = scans.some(s => s.id === decodedText && s.type === "ILLEGAL");
   if (illegalInQueue) {
     statusEl.textContent = "❌ " + student.nama + " sudah ditandai ILLEGAL (menunggu sinkronisasi)";
@@ -552,7 +548,6 @@ let scanType = isEkstraPeriod ? "EKSTRA" : "PAGI";
     return;
   }
   
-  // Check if same scan type already in queue
   const existsInQueue = scans.some(s => s.id === decodedText && s.type === scanType);
   if (existsInQueue) {
     statusEl.textContent = "❌ " + student.nama + " sudah di queue";
@@ -560,7 +555,6 @@ let scanType = isEkstraPeriod ? "EKSTRA" : "PAGI";
     return;
   }
   
-  // Check server-side status
   if (student.status === "ILLEGAL") {
     statusEl.textContent = "❌ " + student.nama + " sudah ditandai ILLEGAL";
     statusEl.className = "error";
@@ -579,7 +573,6 @@ let scanType = isEkstraPeriod ? "EKSTRA" : "PAGI";
     return;
   }
   
-  // Add to queue
   scans.push({ id: decodedText, type: scanType, time: now, operator: currentOperator });
   localStorage.setItem("scanQueue", JSON.stringify(scans));
   updateQueueBadge();
@@ -596,7 +589,6 @@ let scanType = isEkstraPeriod ? "EKSTRA" : "PAGI";
   clearTimeout(sendTimer);
   sendTimer = setTimeout(sendQueue, 30000);
 }
-
 /* SHOW STUDENT CARD */
 function showStudentCard(student, scanType) {
   currentScanId = student.id;
@@ -976,8 +968,25 @@ async function submitKodeKhusus() {
   showLoading(true);
   
   try {
-    const hour = new Date().getHours();
-    const scanType = (hour >= 5 && hour < 7) ? "PAGI" : "EKSTRA";
+    const dt = new Date();
+    const hour = dt.getHours();
+    const minutes = dt.getMinutes();
+    const timeValue = hour + (minutes / 100);
+    
+    const scanType = (timeValue >= 5.00 && timeValue < 7.30) ? "PAGI" : 
+                     (timeValue >= 10.00 && timeValue < 11.00) ? "EKSTRA" : null;
+
+    if (!scanType) {
+      const kodeStatus = document.getElementById("kodeStatus");
+      if (kodeStatus) {
+        kodeStatus.textContent = "❌ Di luar jam absensi";
+        kodeStatus.style.color = "var(--red)";
+      }
+      playSound("errorSound");
+      isSubmittingKode = false;
+      showLoading(false);
+      return;
+    }
     
     const res = await fetch(`${API_URL}?action=useSpecialCode&code=${kode}&operator=${currentOperator}&scanType=${scanType}`)
     const data = await res.json();
