@@ -494,8 +494,8 @@ function processStudentScan(decodedText) {
   if (now - lastScan < 2000) return;
   lastScan = now;
   
-  const dt = new Date();
-  const hour = dt.getHours();
+  const dt = new Date();  // ← CHANGED: was "const now"
+  const hour = dt.getHours();  // ← CHANGED: was "now.getHours()"
   const minutes = dt.getMinutes();
   const timeValue = hour + (minutes / 100);
 
