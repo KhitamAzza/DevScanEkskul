@@ -1458,3 +1458,37 @@ body {
 #missingScreen #syncButtonContainer {
   display: none !important;
 }
+/* Hours ribbon banner */
+#hoursRibbon {
+  background: linear-gradient(90deg, #dc2626 0%, #ef4444 50%, #dc2626 100%);
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-weight: 700;
+  font-size: 25px;
+  position: fixed;  /* ← CHANGED from sticky */
+  top: 270px;       /* ← Same position you wanted */
+  left: 0;
+  right: 0;
+  z-index: 9999;    /* ← Higher z-index to float above */
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+  animation: pulseRibbon 2s infinite;
+}
+
+@keyframes pulseRibbon {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+/* Desktop adjustment - remove the padding push */
+@media screen and (min-width: 768px) {
+  #hoursRibbon {
+    position: fixed;
+    top: 60px;  /* Or whatever desktop position you want */
+    left: 0;
+    right: 0;
+    z-index: 9999;
+  }
+}
