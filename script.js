@@ -723,14 +723,42 @@ function stopClock() {
   }
 }
 
+/* UPDATE HOURS RIBBON VISIBILITY */
+function updateHoursRibbon() {
+  const ribbon = document.getElementById("hoursRibbon");
+  if (!ribbon) return;
+  
+  const dt = new Date();
+  const hour = dt.getHours();
+  const minutes = dt.getMinutes();
+  const timeValue = hour + (minutes / 100);
+  
+  // Check if outside hours (before 5:00 or after 11:00, or in gap 8:00-9:50)
+  const isOutsideHours = timeValue < 5.00 || timeValue >= 11.00 || (timeValue >= 8.00 && timeValue < 9.50);
+  
+  ribbon.style.display = isOutsideHours ? "block" : "none";
+}
+
+/* UPDATE CLOCK WITH DATE */
 function updateClock() {
   const now = new Date();
+  
+  // Format time
   const timeStr = now.toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' });
   timeTileValue.textContent = timeStr;
   const timeBig = document.getElementById("timeBig");
   if (timeBig) timeBig.textContent = timeStr;
+  
+  // Format date for the tile label
+  const dateStr = now.toLocaleDateString("id-ID", { day: 'numeric', month: 'short' });
+  const timeTile = document.querySelector('.info-tile.time-tile .tile-label');
+  if (timeTile) {
+    timeTile.innerHTML = `Tanggal <span style="color: var(--text-secondary); font-size: 10px; display: block; margin-top: 2px;">${dateStr}</span>`;
+  }
+  
+  // Update ribbon visibility
+  updateHoursRibbon();
 }
-
 /* ============================================
    MANUAL SYNC FUNCTIONS
    ============================================ */
@@ -894,6 +922,7 @@ window.addEventListener("DOMContentLoaded", () => {
   });
   
   updateQueueBadge(); // Init queue badge
+  updateHoursRibbon(); 
 });
 
 /* ============================================
