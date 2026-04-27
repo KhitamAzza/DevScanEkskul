@@ -585,9 +585,14 @@ function processStudentScan(decodedText) {
   reader.classList.add("success");
   setTimeout(() => reader.classList.remove("success"), 300);
   
-  showStudentCard(student, scanType);
+    showStudentCard(student, scanType);
   clearTimeout(sendTimer);
-  sendTimer = setTimeout(sendQueue, 30000);
+
+  if (scans.length >= 25) {
+    sendQueue();
+  } else {
+    sendTimer = setTimeout(sendQueue, 30000);
+  }
 }
 /* SHOW STUDENT CARD */
 function showStudentCard(student, scanType) {
