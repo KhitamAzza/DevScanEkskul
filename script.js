@@ -350,7 +350,7 @@ function getNotScannedStudents() {
 const hour = now.getHours();
 const minutes = now.getMinutes();
 const timeValue = hour + (minutes / 100);
-const isEkstraPeriod = (timeValue >= 9.50 && timeValue < 11.00);
+const isEkstraPeriod = (timeValue >= 9.50 && timeValue < 21.00);
 const isPagiPeriod = (timeValue >= 5.00 && timeValue < 8.00);
   
   return allStudents.filter(s => {
@@ -368,7 +368,7 @@ function getScannedStudents() {
 const hour = now.getHours();
 const minutes = now.getMinutes();
 const timeValue = hour + (minutes / 100);
-const isEkstraPeriod = (timeValue >= 9.50 && timeValue < 11.00);
+const isEkstraPeriod = (timeValue >= 9.50 && timeValue < 21.00);
 const isPagiPeriod = (timeValue >= 5.00 && timeValue < 8.00);
   
   return allStudents.filter(s => {
@@ -499,7 +499,7 @@ function processStudentScan(decodedText) {
   const minutes = dt.getMinutes();
   const timeValue = hour + (minutes / 100);
 
-  if (timeValue < 5.00 || timeValue >= 11.00) {
+  if (timeValue < 5.00 || timeValue >= 21.00) {
     statusEl.textContent = "❌ Di luar jam absensi";
     statusEl.className = "error";
     playSound("errorSound");
@@ -527,7 +527,7 @@ function processStudentScan(decodedText) {
   }
   
   const isPagiPeriod = (timeValue >= 5.00 && timeValue < 8.00);
-  const isEkstraPeriod = (timeValue >= 9.50 && timeValue < 11.00);
+  const isEkstraPeriod = (timeValue >= 9.50 && timeValue < 21.00);
 
   if (!isPagiPeriod && !isEkstraPeriod) {
     statusEl.textContent = "❌ Di luar jam absensi";
@@ -739,7 +739,7 @@ function updateHoursRibbon() {
   const timeValue = hour + (minutes / 100);
   
   // Check if outside hours (before 5:00 or after 11:00, or in gap 8:00-9:50)
-  const isOutsideHours = timeValue < 5.00 || timeValue >= 11.00 || (timeValue >= 8.00 && timeValue < 9.50);
+  const isOutsideHours = timeValue < 5.00 || timeValue >= 21.00 || (timeValue >= 8.00 && timeValue < 9.50);
   
   ribbon.style.display = isOutsideHours ? "block" : "none";
 }
@@ -1008,7 +1008,7 @@ async function submitKodeKhusus() {
     const timeValue = hour + (minutes / 100);
     
     const scanType = (timeValue >= 5.00 && timeValue < 8.00) ? "PAGI" : 
-                     (timeValue >= 9.50 && timeValue < 11.00) ? "EKSTRA" : null;
+                     (timeValue >= 9.50 && timeValue < 21.00) ? "EKSTRA" : null;
 
     if (!scanType) {
       const kodeStatus = document.getElementById("kodeStatus");
