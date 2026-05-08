@@ -272,7 +272,19 @@ function doLogout() {
 async function loadStudentsAndUpdateCount() {
   showLoading(true);
   try {
-    const today = new Date().toLocaleDateString("id-ID");
+    function getJakartaDateString() {
+  const now = new Date();
+  const str = now.toLocaleDateString("en-GB", {
+    timeZone: "Asia/Jakarta",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
+  return str; // Guaranteed "09/05/2026" with leading zeros
+}
+
+// Then use:
+const today = getJakartaDateString();
     
     // ⭐ MASTER MODE: Send "ALL" to get all students
     const isMaster = currentEkstra === "MASTER";
