@@ -4,6 +4,7 @@ const OPERATORS = {
 "azkiahasna": { name: "Chusnul Khitam Azza", ekstra: "MASTER", isMaster: true },
  "devkoord1": { name: "Prihanto Wahyu", ekstra: "MASTER", isMaster: true },
  "devtatib1": { name: "Syamsul Arif", ekstra: "MASTER", isMaster: true },
+ "devtatib2": { name: "Siti Munawaroh", ekstra: "MASTER", isMaster: true },
 "eksesport": { name: "Masduki Zen", ekstra: "E-Sport" },
 "eksfutsal": { name: "Rizky", ekstra: "Futsal" },
 "ekspakbola": { name: "Rico Yoga", ekstra: "Sepakbola" },
@@ -363,7 +364,7 @@ const hour = now.getHours();
 const minutes = now.getMinutes();
 const timeValue = hour + (minutes / 100);
 const isEkstraPeriod = (timeValue >= 9.50 && timeValue < 11.00);
-const isPagiPeriod = (timeValue >= 5.00 && timeValue < 8.30);
+const isPagiPeriod = (timeValue >= 5.00 && timeValue < 8.45);
   
   return allStudents.filter(s => {
     const status = s.status || "";
@@ -381,7 +382,7 @@ const hour = now.getHours();
 const minutes = now.getMinutes();
 const timeValue = hour + (minutes / 100);
 const isEkstraPeriod = (timeValue >= 9.50 && timeValue < 11.00);
-const isPagiPeriod = (timeValue >= 5.00 && timeValue < 8.30);
+const isPagiPeriod = (timeValue >= 5.00 && timeValue < 8.45);
   
   return allStudents.filter(s => {
     const status = s.status || "";
@@ -528,7 +529,7 @@ function processStudentScan(decodedText) {
 
   const isMaster = currentEkstra === "MASTER";
   if (!isMaster) {
-    const isPagiPeriod = (timeValue >= 5.00 && timeValue < 8.30);
+    const isPagiPeriod = (timeValue >= 5.00 && timeValue < 8.45);
     
     if (!isPagiPeriod && student.ekstra && student.ekstra.toLowerCase() !== currentEkstra.toLowerCase()) {
       statusEl.textContent = "❌ Siswa tidak terdaftar di " + currentEkstra;
@@ -538,7 +539,7 @@ function processStudentScan(decodedText) {
     }
   }
   
-  const isPagiPeriod = (timeValue >= 5.00 && timeValue < 8.30);
+  const isPagiPeriod = (timeValue >= 5.00 && timeValue < 8.45);
   const isEkstraPeriod = (timeValue >= 9.50 && timeValue < 11.00);
 
   if (!isPagiPeriod && !isEkstraPeriod) {
@@ -751,7 +752,7 @@ function updateHoursRibbon() {
   const timeValue = hour + (minutes / 100);
   
   // Check if outside hours (before 5:00 or after 11:00, or in gap 8:00-9:50)
-  const isOutsideHours = timeValue < 5.00 || timeValue >= 11.00 || (timeValue >= 8.30 && timeValue < 9.50);
+  const isOutsideHours = timeValue < 5.00 || timeValue >= 11.00 || (timeValue >= 8.45 && timeValue < 9.50);
   
   ribbon.style.display = isOutsideHours ? "block" : "none";
 }
@@ -1019,7 +1020,7 @@ async function submitKodeKhusus() {
     const minutes = dt.getMinutes();
     const timeValue = hour + (minutes / 100);
     
-    const scanType = (timeValue >= 5.00 && timeValue < 8.30) ? "PAGI" : 
+    const scanType = (timeValue >= 5.00 && timeValue < 8.45) ? "PAGI" : 
                      (timeValue >= 9.50 && timeValue < 11.00) ? "EKSTRA" : null;
 
     if (!scanType) {
