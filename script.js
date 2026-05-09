@@ -20,6 +20,7 @@ const OPERATORS = {
  "ekstapmr": { name: "Nur Khozinatul", ekstra: "PMR" },
  "ekswondo": { name: "jalupaka", ekstra: "Taekwondo" },
  "eksdance": { name: "Ocha", ekstra: "Dance" },
+ "ekscatur": { name: "Vanny", ekstra: "Catur" },
  "ekscinalam": { name: "Ergananta", ekstra: "Pecinta Alam" }
 };
 
